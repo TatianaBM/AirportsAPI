@@ -1,0 +1,6 @@
+{
+    "pagination": {
+        "defaultLimit" : 30
+    },
+    "rateLimit" : 100
+}
