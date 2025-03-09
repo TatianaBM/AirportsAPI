@@ -92,6 +92,22 @@ describe('200 status code', () => {
         )
     })
 
+    it('returns an empty array for pages exceeding total pages ', () => {
+        let exceedTotalPages = totalPages + 1
+        function hasZeroElements(array) {
+            return array.length === 0
+        }
+        fetchAirportsByPage(endpoints.airports, exceedTotalPages).should(
+            spok({
+                status: 200,
+                body: {
+                    data: hasZeroElements,
+                }
+            })
+        )
+    })
+
+
 })
 
 describe('404 status code', () => {
@@ -103,7 +119,7 @@ describe('404 status code', () => {
             })
         )
     })
-    
+
     it('errors when fetching non existing page ', () => {
         let page = -1
         fetchAirportsByPage(endpoints.airports, page).should(
