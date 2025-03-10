@@ -144,7 +144,7 @@ describe('404 status code', () => {
         )
     })
 
-    it.only('error by sending the non-existing airportsId', () => {
+    it('error by sending the non-existing airportsId', () => {
         let invalidAirportsId = faker.lorem.word(4).toUpperCase()
         fetchAirportById(endpoints.airports, invalidAirportsId).then(response => {
             expect(response.status).to.equal(404)
