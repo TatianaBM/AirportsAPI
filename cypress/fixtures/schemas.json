@@ -1,0 +1,117 @@
+{
+    "airports": {
+        "status_200": {
+            "schema_1": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {}
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+            },
+            "schema_2": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "city": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            },
+                            "iata": {
+                              "type": "string"
+                            },
+                            "icao": {
+                              "type": "string"
+                            },
+                            "latitude": {
+                              "type": "string"
+                            },
+                            "longitude": {
+                              "type": "string"
+                            },
+                            "altitude": {
+                              "type": "number"
+                            },
+                            "timezone": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "city",
+                            "country",
+                            "iata",
+                            "icao",
+                            "latitude",
+                            "longitude",
+                            "altitude",
+                            "timezone"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ]
+                    }
+                  },
+                  "links": {
+                    "type": "object",
+                    "properties": {
+                      "first": {
+                        "type": "string"
+                      },
+                      "self": {
+                        "type": "string"
+                      },
+                      "last": {
+                        "type": "string"
+                      },
+                      "prev": {
+                        "type": "string"
+                      },
+                      "next": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "first",
+                      "self",
+                      "last",
+                      "prev",
+                      "next"
+                    ]
+                  }
+                },
+                "required": [
+                  "data",
+                  "links"
+                ]
+              
+            }
+        }
+    }
+}
