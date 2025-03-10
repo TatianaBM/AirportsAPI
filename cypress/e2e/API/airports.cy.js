@@ -95,7 +95,7 @@ describe('200 status code', () => {
         )
     })
 
-    it('returns airport by faker generated id', () => {
+    it('returns the airport by the faker generated id', () => {
         let randomAirportInfo = faker.airline.airport()
         fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).then(response => {
             expect(response.status).to.equal(200)
@@ -103,7 +103,7 @@ describe('200 status code', () => {
         })
     })
 
-    it('returns airport by id and checks its name', () => {
+    it('returns the airport specified by the ID and checks its name', () => {
         let randomPage = Cypress._.random(1, totalPages)
         let randomAirportNumber = Cypress._.random(0, airports.pagination.defaultLimit)
         cy.log(randomPage, randomAirportNumber)
@@ -143,6 +143,15 @@ describe('404 status code', () => {
             })
         )
     })
+
+    it.only('error by sending the non-existing airportsId', () => {
+        let invalidAirportsId = faker.lorem.word(4).toUpperCase()
+        fetchAirportById(endpoints.airports, invalidAirportsId).then(response => {
+            expect(response.status).to.equal(404)
+            expect(response.statusText).to.equal('Not Found')
+        })
+    })
+
 })
 
 // describe('429 status code', () => {
