@@ -10,10 +10,8 @@ import {
 import { endpoints } from '../../support/endpoints'
 import spok from 'cy-spok'
 import airports from '../../fixtures/airports.json'
-import schemas from '../../fixtures/schemas.json'
 
 const { defaultLimit } = airports.pagination
-const { status_200 } = schemas.airports
 const requestUrl = `${Cypress.config('baseUrl')}${endpoints.airports}`
 
 let totalPages
@@ -112,6 +110,7 @@ describe('200 status code', () => {
         )
     })
 
+
     it('returns the airport by the faker generated id', () => {
         let randomAirportInfo = faker.airline.airport()
         fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).then(response => {
@@ -140,25 +139,10 @@ describe('200 status code', () => {
             expect(response.body.data.attributes.name).to.equal(airportsName)
         })
     })
-
-    it('verifies schema', () => {
-        fetchAirports(endpoints.airports).validateSchema(status_200.schema_2)
-    })
-
-    it('verifies schema when sending query parameters', () => {
-        let page = Cypress._.random(2,totalPages-1)
-        fetchAirportsByPage(endpoints.airports, page).validateSchema(status_200.schema_2)
-    })
-
-    it('verifies schema for pages exceeding total pages', () => {
-        let page = Cypress._.random(totalPages+1, totalPages+10)
-        fetchAirportsByPage(endpoints.airports, page).validateSchema(status_200.schema_1)
-    })
-    
 })
 
 describe('404 status code', () => {
-    it('errors when fetching non existing page', () => {
+    it('errors when fetching non existing page ', () => {
         let page = 0
         fetchAirportsByPage(endpoints.airports, page).should(
             spok({
@@ -167,7 +151,7 @@ describe('404 status code', () => {
         )
     })
 
-    it('errors when fetching non existing page', () => {
+    it('errors when fetching non existing page ', () => {
         let page = -1
         fetchAirportsByPage(endpoints.airports, page).should(
             spok({

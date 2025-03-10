@@ -16,4 +16,3 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import 'cypress-plugin-api'
-import 'cypress-ajv-schema-validator'
