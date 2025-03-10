@@ -46,3 +46,13 @@ export function retrieveTotalPages(requestUrl) {
         return cy.wrap(Number(foundPages[0]))
     })
 }
+
+/**
+ * Fetches airport information by id 
+ * @param {string} requestUrl - The URL of the API endpoint
+ * @param {string} id - Id of the airport to fetch airport information
+ * @returns {Cypress.Chainable} - A Cypress chainable promise containing the API response
+ */
+export function fetchAirportById(requestUrl, id) {
+    return fetchAirports(`${requestUrl}/${id}`)
+}

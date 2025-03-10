@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
     "cy-spok": "^1.5.2",
     "cypress": "^14.1.0",
     "cypress-ajv-schema-validator": "^1.4.0",

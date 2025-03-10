@@ -1,8 +1,11 @@
 /// <reference types="cypress" />
+import { faker, Faker } from '@faker-js/faker'
+
 import {
     fetchAirports,
     fetchAirportsByPage,
     retrieveTotalPages,
+    fetchAirportById
 } from '../../support/utils'
 import { endpoints } from '../../support/endpoints'
 import spok from 'cy-spok'
@@ -56,7 +59,7 @@ describe('200 status code', () => {
     })
 
     it('returns default limit from random page', () => {
-        let randomPage = Cypress._.random(2,totalPages-1)
+        let randomPage = Cypress._.random(2, totalPages - 1)
         fetchAirportsByPage(endpoints.airports, randomPage).should(
             spok({
                 status: 200,
@@ -108,6 +111,34 @@ describe('200 status code', () => {
     })
 
 
+    it('returns the airport by the faker generated id', () => {
+        let randomAirportInfo = faker.airline.airport()
+        fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).then(response => {
+            expect(response.status).to.equal(200)
+            expect(response.body.data.attributes.name).to.equal(randomAirportInfo.name)
+        })
+    })
+
+    it('returns the airport specified by the ID and checks its name', () => {
+        let randomPage = Cypress._.random(1, totalPages)
+        let randomAirportNumber = Cypress._.random(0, airports.pagination.defaultLimit)
+        cy.log(randomPage, randomAirportNumber)
+        let airportsId, airportsName
+        //get the airport from random page and with random sequence number
+        //and retrieve airportsId and airportsName
+        fetchAirportsByPage(endpoints.airports, randomPage).then(response => {
+            airportsId = response.body.data[randomAirportNumber].id
+            airportsName = response.body.data[randomAirportNumber].attributes.name
+            return airportsId
+        }).then(airportsId => {
+        //get airport by retrieved airportsId
+            return fetchAirportById(endpoints.airports, airportsId)
+        }).then(response => {
+        //check if name of the airport in the body meets retrieved airportsName
+            expect(response.status).to.equal(200)
+            expect(response.body.data.attributes.name).to.equal(airportsName)
+        })
+    })
 })
 
 describe('404 status code', () => {
@@ -128,6 +159,15 @@ describe('404 status code', () => {
             })
         )
     })
+
+    it('error by sending the non-existing airportsId', () => {
+        let invalidAirportsId = faker.lorem.word(4).toUpperCase()
+        fetchAirportById(endpoints.airports, invalidAirportsId).then(response => {
+            expect(response.status).to.equal(404)
+            expect(response.statusText).to.equal('Not Found')
+        })
+    })
+
 })
 
 // describe('429 status code', () => {
