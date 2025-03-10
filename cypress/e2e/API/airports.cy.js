@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+import { faker, Faker } from '@faker-js/faker'
+
 import {
     fetchAirports,
     fetchAirportsByPage,
@@ -93,7 +95,15 @@ describe('200 status code', () => {
         )
     })
 
-    it('returns airport by id', () => {
+    it('returns airport by faker generated id', () => {
+        let randomAirportInfo = faker.airline.airport()
+        fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).then(response => {
+            expect(response.status).to.equal(200)
+            expect(response.body.data.attributes.name).to.equal(randomAirportInfo.name)
+        })
+    })
+
+    it('returns airport by id and checks its name', () => {
         let randomPage = Cypress._.random(1, totalPages)
         let randomAirportNumber = Cypress._.random(0, airports.pagination.defaultLimit)
         cy.log(randomPage, randomAirportNumber)
