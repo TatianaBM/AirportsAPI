@@ -13,9 +13,11 @@ import schemas from '../../fixtures/schemas.json'
 import { dataGenerator } from '../../support/testData'
 
 const { defaultLimit } = airports.pagination
-const { status_200 } = schemas.airports
+const { status_200 } = schemas.getAirportById
+const { status_404 } = schemas.getAirportById
 const requestUrl = `${Cypress.config('baseUrl')}${endpoints.airports}`
-const testData = dataGenerator.invalidIATACode()
+const invalidTestData = dataGenerator.invalidIATACode()
+const validTestData = dataGenerator.validIATACode()
 
 let totalPages
 
@@ -26,26 +28,12 @@ before(() => {
 describe('200 status code', () => {
 
     it('returns the airport by the faker generated IATA code', () => {
-        let randomAirportInfo = faker.airline.airport()
-        // without spok:
-        // fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).then(response => {
-        //     cy.log(response.body)
-        //     expect(response.status).to.equal(200)
-        //     expect(response.body.data.attributes.name).to.equal(randomAirportInfo.name)
-        // })
-        fetchAirportById(endpoints.airports, randomAirportInfo.iataCode).should(
-            spok({
-                status: 200,
-                body: {
-                    data: {
-                        attributes: {
-                            name: randomAirportInfo.name,
-                            iata: randomAirportInfo.iataCode
-                        }
-                    }                    
-                }
-            })
-        )
+        fetchAirportById(endpoints.airports, validTestData.iataCode).then(response => {
+            cy.log(response.body)
+            expect(response.status, 'status code').to.equal(200)
+            expect(response.body.data.attributes.name, 'airport name').to.equal(validTestData.name)
+            expect(response.body.data.id, 'airport id').to.equal(validTestData.iataCode)
+        })
     })
     
     it('returns the airport specified by IATA code and checks its name', () => {
@@ -64,22 +52,46 @@ describe('200 status code', () => {
             return fetchAirportById(endpoints.airports, airportsId)
         }).then(response => {
         //check if name of the airport in the body meets retrieved airportsName
-            expect(response.status).to.equal(200)
+            expect(response.status, 'code status').to.equal(200)
             expect(response.body.data.attributes.name).to.equal(airportsName)
+            expect(response.body.data.id).to.equal(airportsId)
         })
+    })
+
+    it('verifies schema for request with valid IATA code', () => {
+        fetchAirportById(endpoints.airports, validTestData.iataCode)
+            .validateSchema(status_200)
     })
     
 })
 
 describe('404 status code', () => {
 
-    for (let invalidId in testData) {
+    for (let invalidId in invalidTestData) {
         it(`error by sending the non-existing IATA code: ${invalidId}`, () => {
-            fetchAirportById(endpoints.airports, testData[invalidId]).then(response => {
-                expect(response.status).to.equal(404)
-                expect(response.statusText).to.equal('Not Found')
-            })
+            fetchAirportById(endpoints.airports, invalidTestData[invalidId]).should(
+                spok({
+                    status: 404,
+                    body: {
+                        "errors": [
+                            {
+                                "status": "404",
+                                "title": "Not Found",
+                                "detail": "The page you requested could not be found"
+                            }
+                        ]
+                    }
+                })
+            )
         })
     }
+
+    for (let invalidId in invalidTestData) {
+        it(`verifies schema for request with non-existing IATA code: ${invalidId}`, () => {
+            fetchAirportById(endpoints.airports, invalidTestData[invalidId])
+                .validateSchema(status_404)
+        })
+    }
+    
     
 })
