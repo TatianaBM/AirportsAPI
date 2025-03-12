@@ -12,5 +12,8 @@ export const dataGenerator = {
             'null value': null,
             'undefined value': undefined
         }
+    },
+    validIATACode: function() {
+        return faker.airline.airport()
     }
 }
