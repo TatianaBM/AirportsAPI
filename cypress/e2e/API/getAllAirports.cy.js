@@ -9,11 +9,12 @@ import { endpoints } from '../../support/endpoints'
 import spok from 'cy-spok'
 import airports from '../../fixtures/airports.json'
 import schemas from '../../fixtures/schemas.json'
+import { dataGenerator } from '../../support/testData'
 
 const { defaultLimit } = airports.pagination
 const { status_200 } = schemas.airports
 const requestUrl = `${Cypress.config('baseUrl')}${endpoints.airports}`
-
+ 
 let totalPages
 
 before(() => {
@@ -110,55 +111,28 @@ describe('200 status code', () => {
         )
     })
 
-    it('verifies schema', () => {
+    it('verifies schema first page', () => {
         fetchAirports(endpoints.airports).validateSchema(status_200.schema_2)
     })
 
-    it('verifies schema when sending query parameters', () => {
+    it('verifies schema when retrieving a page', () => {
         let page = Cypress._.random(2,totalPages-1)
         fetchAirportsByPage(endpoints.airports, page).validateSchema(status_200.schema_2)
     })
 
     it('verifies schema for pages exceeding total pages', () => {
-        let page = Cypress._.random(totalPages+1, totalPages+10)
+        let page = Cypress._.random(totalPages+1, totalPages+100)
         fetchAirportsByPage(endpoints.airports, page).validateSchema(status_200.schema_1)
     })
     
 })
 
 describe('404 status code', () => {
-    it('errors when fetching non existing page', () => {
-        let page = 0
-        fetchAirportsByPage(endpoints.airports, page).should(
-            spok({
-                status: 404
-            })
-        )
+    dataGenerator.invalidPageParameters.forEach(invalidPage => {
+        it(`errors when fetching non existing page = ${invalidPage}`, () => {
+            fetchAirportsByPage(endpoints.airports, invalidPage).its('status').should('eq', 404)
+        })
     })
-
-    it('errors when fetching non existing page', () => {
-        let page = -1
-        fetchAirportsByPage(endpoints.airports, page).should(
-            spok({
-                status: 404
-            })
-        )
-    })
-
 })
 
-// describe('429 status code', () => {
-//     //we simulate multiple requests to an endpoint and ensure that the API enforces rate limiting 
-//     //by returning a 429 Too Many Requests status after a threshold
-//     for (let i = 1; i <= airports.rateLimit; i++) {
-//         it('errors when reaching rate limit', () => {
-//             fetchAirports(requestUrl).then(response => {
-//                 if(i == airports.rateLimit){
-//                     expect(response.status).to.eq(429)
-//                 } else {
-//                     expect(response.status).to.eq(200)
-//                 }
-//             }) 
-//         })
-//     }
-// })
+

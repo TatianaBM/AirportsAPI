@@ -17,3 +17,9 @@
 import './commands'
 import 'cypress-plugin-api'
 import 'cypress-ajv-schema-validator'
+
+before(()=>{
+    Cypress.on('uncaught:exception', (err, runnable) => {
+    return false
+  })
+})

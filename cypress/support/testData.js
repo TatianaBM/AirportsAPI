@@ -12,5 +12,7 @@ export const dataGenerator = {
             'null value': null,
             'undefined value': undefined
         }
-    }
+    },
+    invalidPageParameters: [0,-1,'&', '/' , '@', '$', '#' , '_', '!',null,undefined, faker.string.alpha(1)]
+
 }
