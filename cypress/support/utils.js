@@ -56,3 +56,15 @@ export function retrieveTotalPages(requestUrl) {
 export function fetchAirportById(requestUrl, id) {
     return fetchAirports(`${requestUrl}/${id}`)
 }
+
+export function calculateDistanceBetweenTwoAirports(endpoint, departureId, destinationId) {
+    return cy.api({
+        url: endpoint,
+        method: 'POST',
+        body: {
+            from: departureId,
+            to: destinationId
+        },
+        failOnStatusCode: false
+    })
+}
