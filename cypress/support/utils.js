@@ -59,7 +59,7 @@ export function fetchAirportById(requestUrl, id) {
 
 export function calculateDistanceBetweenTwoAirports(endpoint, departureId, destinationId) {
     return cy.api({
-        url: '/' + endpoint,
+        url: endpoint,
         method: 'POST',
         body: {
             from: departureId,
