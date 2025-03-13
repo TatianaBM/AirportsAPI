@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { faker } from '@faker-js/faker'
+import spok from 'cy-spok'
 
 import {
     fetchAirportsByPage,
@@ -7,15 +7,12 @@ import {
     fetchAirportById
 } from '../../support/utils'
 import { endpoints } from '../../support/endpoints'
-import spok from 'cy-spok'
 import airports from '../../fixtures/airports.json'
 import schemas from '../../fixtures/schemas.json'
 import { dataGenerator } from '../../support/testData'
 
-const { defaultLimit } = airports.pagination
 const { status_200 } = schemas.getAirportById
 const { status_404 } = schemas.getAirportById
-const requestUrl = `${Cypress.config('baseUrl')}${endpoints.airports}`
 const invalidTestData = dataGenerator.invalidIATACode()
 const validTestData = dataGenerator.validIATACode()
 

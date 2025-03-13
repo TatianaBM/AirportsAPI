@@ -1,5 +1,6 @@
 export const endpoints = {
     airports: '/airports',
     token : '/tokens',
-    favorites: '/favorites'
+    favorites: '/favorites',
+    distance: '/airports/distance'
 }
