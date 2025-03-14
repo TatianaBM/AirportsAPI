@@ -1,5 +1,5 @@
 {
-    "airports": {
+    "getAllAirports": {
         "status_200": {
             "schema_1": {
                 "type": "object",

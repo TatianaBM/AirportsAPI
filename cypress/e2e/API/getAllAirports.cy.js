@@ -12,7 +12,10 @@ import schemas from '../../fixtures/schemas.json'
 import { dataGenerator } from '../../support/testData'
 
 const { defaultLimit } = airports.pagination
-const { status_200 } = schemas.airports
+const { html } = airports.headers.request['content-type']
+const { encoding } = airports.headers.request
+const { header, title } = airports.responseBody['content-type'].html
+const { status_200 } = schemas.getAllAirports
 const requestUrl = `${Cypress.config('baseUrl')}${endpoints.airports}`
  
 let totalPages
@@ -129,8 +132,20 @@ describe('200 status code', () => {
 
 describe('404 status code', () => {
     dataGenerator.invalidPageParameters.forEach(invalidPage => {
-        it(`errors when fetching non existing page = ${invalidPage}`, () => {
-            fetchAirportsByPage(endpoints.airports, invalidPage).its('status').should('eq', 404)
+        it(`checks status, response body when fetching non existing page = ${invalidPage}`, () => {
+            fetchAirportsByPage(endpoints.airports, invalidPage).should((response) => {
+                expect(response.status).to.eq(404)
+                expect(response.body).to.include(title)
+                expect(response.body).to.include(header.string_1)
+                expect(response.body).to.include(header.string_2)
+            })
+        })
+
+        it(`checks header content type when fetching non existing page = ${invalidPage}`, () => {
+            fetchAirportsByPage(endpoints.airports, invalidPage)
+                .its("headers['content-type']")
+                .should('contain', html )
+                .and('contain', encoding)
         })
     })
 })
