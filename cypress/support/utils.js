@@ -56,7 +56,13 @@ export function retrieveTotalPages(requestUrl) {
 export function fetchAirportById(requestUrl, id) {
     return fetchAirports(`${requestUrl}/${id}`)
 }
-
+/**
+ * Sends a request to calculate the distance between two airports.
+ * @param {string} endpoint - The API endpoint for distance calculation.
+ * @param {string} departureId - Iata of the departure airport.
+ * @param {string} destinationId - Iata of the destination airport.
+ * @returns {Cypress.Chainable<Response>} - A Cypress chainable object resolving to the API response.
+ */
 export function calculateDistanceBetweenTwoAirports(endpoint, departureId, destinationId) {
     return cy.api({
         url: endpoint,
@@ -67,4 +73,22 @@ export function calculateDistanceBetweenTwoAirports(endpoint, departureId, desti
         },
         failOnStatusCode: false
     })
+}
+/**
+ * Picks a random airport from a paginated API response
+ * @param {number} totalPages - The total number of pages available in the API
+ * @param {string} requestUrl - The base URL for fetching airport data
+ * @returns {Cypress.Chainable<Object>} - A Cypress chainable object resolving to a random airport
+ */
+export function pickRandomAirport(totalPages, requestUrl) {
+    let randomPage = Cypress._.random(1, totalPages)
+    return fetchAirportsByPage(requestUrl, randomPage)
+        .should((response) => {
+            expect(response.status).be.eq(200)
+        })
+        .its('body.data')
+        .then((airportsArray) => {
+            let randomIndex = Cypress._.random(0, airportsArray.length - 1)
+            return airportsArray[randomIndex]
+        })
 }
