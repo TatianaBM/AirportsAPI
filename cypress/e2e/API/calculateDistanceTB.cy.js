@@ -12,7 +12,7 @@ before(() => {
 })
 
 describe('200 status code', () => {
-    it('returns the distance between two airports ', () => {
+    it('returns the distance between two different airports ', () => {
         pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
             const departureAirportIata = departureAirport.attributes.iata
@@ -61,6 +61,53 @@ describe('200 status code', () => {
             })
         })
     })
+
+    it('returns distance = 0 when departure and destination airports are the same', () => {
+        pickRandomAirport(totalPages, endpoints.airports).then(airport => {
+            cy.log(airport)
+            const airportIata = airport.attributes.iata
+                cy.log('calculate distance')
+                calculateDistanceBetweenTwoAirports(endpoints.distance, airportIata, airportIata).should(spok({
+                    status: 200,
+                    body: {
+                        data: {
+                            type: 'airport_distance',
+                            id: `${airportIata}-${airportIata}`,
+                            attributes: {
+                                from_airport: {
+                                    altitude: airport.attributes.altitude,
+                                    city: airport.attributes.city,
+                                    country: airport.attributes.country,
+                                    iata: airportIata,
+                                    icao: airport.attributes.icao,
+                                    id: Cypress._.isNumber,
+                                    latitude: airport.attributes.latitude,
+                                    longitude: airport.attributes.longitude,
+                                    name: airport.attributes.name,
+                                    timezone: airport.attributes.timezone
+                                },
+                                to_airport: {
+                                    altitude: airport.attributes.altitude,
+                                    city: airport.attributes.city,
+                                    country: airport.attributes.country,
+                                    iata: airportIata,
+                                    icao: airport.attributes.icao,
+                                    id: Cypress._.isNumber,
+                                    latitude: airport.attributes.latitude,
+                                    longitude: airport.attributes.longitude,
+                                    name: airport.attributes.name,
+                                    timezone: airport.attributes.timezone
+                                },
+                                kilometers: 0,
+                                miles: 0,
+                                nautical_miles: 0
+                            }
+                        }
+                    }
+                }))
+            
+        })
+    })    
 
     it('checks schema', () => {
         pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
