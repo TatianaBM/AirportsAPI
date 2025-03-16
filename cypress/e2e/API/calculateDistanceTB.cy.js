@@ -3,17 +3,20 @@ import { retrieveTotalPages, calculateDistanceBetweenTwoAirports, pickRandomAirp
 import { endpoints } from '../../support/endpoints'
 import schemas from '../../fixtures/schemas.json'
 import spok from 'cy-spok'
+import { dataGenerator } from '../../support/testData'
+import errors from '../../fixtures/errors.json'
 
 const { status_200 } = schemas.calculateDistance
+const { responseBody } = errors.calculateDistance.status_422
 let totalPages
 
-before(() => {
-    retrieveTotalPages(endpoints.airports).then((number) => totalPages = number)
-})
-
-describe('200 status code', () => {
-    it('returns the distance between two different airports ', () => {
-        pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
+describe('calculates the distance between two airports', () => {
+    before(() => {retrieveTotalPages(endpoints.airports).then((number) => (totalPages = number))
+    })
+    
+    context('200 status code', () => {
+        it('returns the distance between two different airports', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
             const departureAirportIata = departureAirport.attributes.iata
             pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
@@ -54,13 +57,13 @@ describe('200 status code', () => {
                                 kilometers: spok.number,
                                 miles:spok.number,
                                 nautical_miles:spok.number
+                                }
                             }
                         }
-                    }
-                }))
+                    }))
+                })
             })
         })
-    })
 
     it('returns distance = 0 when departure and destination airports are the same', () => {
         pickRandomAirport(totalPages, endpoints.airports).then(airport => {
@@ -109,8 +112,8 @@ describe('200 status code', () => {
         })
     })    
 
-    it('checks schema', () => {
-        pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
+        it('checks schema', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
             const departureAirportIata = departureAirport.attributes.iata
             pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
@@ -118,7 +121,84 @@ describe('200 status code', () => {
                 const destinationAirportIata = destinationAirport.attributes.iata
                 cy.log('calculate distance')
                 calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).validateSchema(status_200)
+                })
             })
+        })
+    })
+
+    context('422 status code', () => {
+        Object.entries(dataGenerator.invalidIATACode()).forEach(
+            ([key, invalidIataCodeDepartureAirport]) => {
+                it(`errors when departure airport is invalid: ${key}`, () => {
+                    pickRandomAirport(totalPages, endpoints.airports).then(
+                        (destinationAirport) => {
+                            const destinationAirportIata =
+                                destinationAirport.attributes.iata
+                            calculateDistanceBetweenTwoAirports(
+                                endpoints.distance,
+                                invalidIataCodeDepartureAirport,
+                                destinationAirportIata,
+                            ).should(
+                                spok({
+                                    status: 422,
+                                    body: responseBody,
+                                }),
+                            )
+                        },
+                    )
+                })
+            },
+        )
+        Object.entries(dataGenerator.invalidIATACode()).forEach(
+            ([key, invalidIataCodeDestinationAirport]) => {
+                it(`errors when destination airport is invalid: ${key}`, () => {
+                    pickRandomAirport(totalPages, endpoints.airports).then(
+                        (departureAirport) => {
+                            const departureAirportIata =
+                                departureAirport.attributes.iata
+                            calculateDistanceBetweenTwoAirports(
+                                endpoints.distance,
+                                departureAirportIata,
+                                invalidIataCodeDestinationAirport,
+                            ).should(
+                                spok({
+                                    status: 422,
+                                    body: responseBody,
+                                }),
+                            )
+                        },
+                    )
+                })
+            },
+        )
+        it('errors when Iata code airport is of wrong data type', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (departureAirport) => {
+                    cy.log(departureAirport)
+                    const departureAirportIata = [
+                        departureAirport.attributes.iata,
+                    ]
+                    pickRandomAirport(totalPages, endpoints.airports).then(
+                        (destinationAirport) => {
+                            cy.log(destinationAirport)
+                            const destinationAirportIata = [
+                                destinationAirport.attributes.iata,
+                            ]
+                            cy.log('calculate distance')
+                            calculateDistanceBetweenTwoAirports(
+                                endpoints.distance,
+                                departureAirportIata,
+                                destinationAirportIata,
+                            ).should(
+                                spok({
+                                    status: 422,
+                                    body: responseBody,
+                                }),
+                            )
+                        },
+                    )
+                },
+            )
         })
     })
 })
