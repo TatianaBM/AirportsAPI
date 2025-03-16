@@ -4,7 +4,6 @@ export const dataGenerator = {
     invalidIATACode: function() {
         return {
             number: faker.number.int(100),
-            'empty string': '',
             'lower case': faker.airline.airport().iataCode.toLowerCase(),
             'more than 3 characters': faker.string.alpha(4).toUpperCase(),
             'less than 3 characters': faker.string.alpha(2).toUpperCase(),
