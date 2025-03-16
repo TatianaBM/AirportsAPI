@@ -1,0 +1,15 @@
+{
+    "calculateDistance": {
+        "status_422": {
+            "responseBody": {
+                "errors": [
+                    {
+                        "status": "422",
+                        "title": "Unable to process request",
+                        "detail": "Please enter valid 'from' and 'to' airports."
+                    }
+                ]
+            }
+        }
+    }
+}
