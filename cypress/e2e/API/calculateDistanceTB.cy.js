@@ -1,16 +1,19 @@
 /// <reference types="cypress" />
-import { retrieveTotalPages, calculateDistanceBetweenTwoAirports, pickRandomAirport } from '../../support/utils'
+import { retrieveTotalPages, calculateDistanceBetweenTwoAirports, pickRandomAirport, isMoreThanZero } from '../../support/utils'
 import { endpoints } from '../../support/endpoints'
 import schemas from '../../fixtures/schemas.json'
 import spok from 'cy-spok'
 import { dataGenerator } from '../../support/testData'
 import errors from '../../fixtures/errors.json'
 
-const { status_200 } = schemas.calculateDistance
+const { status_200, status_422 } = schemas.calculateDistance
 const { responseBody } = errors.calculateDistance.status_422
-let totalPages
 
 describe('calculates the distance between two airports', () => {
+    let totalPages
+    let departureAirportIata
+    let destinationAirportIata
+
     before(() => {retrieveTotalPages(endpoints.airports).then((number) => (totalPages = number))
     })
     
@@ -18,10 +21,10 @@ describe('calculates the distance between two airports', () => {
         it('returns the distance between two different airports', () => {
             pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
-            const departureAirportIata = departureAirport.attributes.iata
+            departureAirportIata = departureAirport.attributes.iata
             pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
                 cy.log(destinationAirport)
-                const destinationAirportIata = destinationAirport.attributes.iata
+                destinationAirportIata = destinationAirport.attributes.iata
                 cy.log('calculate distance')
                 calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).should(spok({
                     status: 200,
@@ -36,7 +39,7 @@ describe('calculates the distance between two airports', () => {
                                     country: departureAirport.attributes.country,
                                     iata: departureAirportIata,
                                     icao: departureAirport.attributes.icao,
-                                    id: Cypress._.isNumber,
+                                    id: spok.number,
                                     latitude: departureAirport.attributes.latitude,
                                     longitude: departureAirport.attributes.longitude,
                                     name: departureAirport.attributes.name,
@@ -48,15 +51,15 @@ describe('calculates the distance between two airports', () => {
                                     country: destinationAirport.attributes.country,
                                     iata: destinationAirportIata,
                                     icao: destinationAirport.attributes.icao,
-                                    id: Cypress._.isNumber,
+                                    id: spok.number,
                                     latitude: destinationAirport.attributes.latitude,
                                     longitude: destinationAirport.attributes.longitude,
                                     name: destinationAirport.attributes.name,
                                     timezone: destinationAirport.attributes.timezone
                                 },
-                                kilometers: spok.number,
-                                miles:spok.number,
-                                nautical_miles:spok.number
+                                kilometers: isMoreThanZero,
+                                miles: isMoreThanZero,
+                                nautical_miles: isMoreThanZero
                                 }
                             }
                         }
@@ -65,60 +68,66 @@ describe('calculates the distance between two airports', () => {
             })
         })
 
-    it('returns distance = 0 when departure and destination airports are the same', () => {
-        pickRandomAirport(totalPages, endpoints.airports).then(airport => {
+        it('returns distance = 0 when departure and destination airports are the same', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then((airport) => {
             cy.log(airport)
-            const airportIata = airport.attributes.iata
-                cy.log('calculate distance')
-                calculateDistanceBetweenTwoAirports(endpoints.distance, airportIata, airportIata).should(spok({
+            departureAirportIata = airport.attributes.iata
+            destinationAirportIata = airport.attributes.iata
+            cy.log('calculate distance')
+            calculateDistanceBetweenTwoAirports(
+                endpoints.distance,
+                departureAirportIata,
+                destinationAirportIata,
+            ).should(
+                spok({
                     status: 200,
                     body: {
                         data: {
                             type: 'airport_distance',
-                            id: `${airportIata}-${airportIata}`,
+                            id: `${departureAirportIata}-${destinationAirportIata}`,
                             attributes: {
                                 from_airport: {
                                     altitude: airport.attributes.altitude,
                                     city: airport.attributes.city,
                                     country: airport.attributes.country,
-                                    iata: airportIata,
+                                    iata: departureAirportIata,
                                     icao: airport.attributes.icao,
-                                    id: Cypress._.isNumber,
+                                    id: spok.number,
                                     latitude: airport.attributes.latitude,
                                     longitude: airport.attributes.longitude,
                                     name: airport.attributes.name,
-                                    timezone: airport.attributes.timezone
+                                    timezone: airport.attributes.timezone,
                                 },
                                 to_airport: {
                                     altitude: airport.attributes.altitude,
                                     city: airport.attributes.city,
                                     country: airport.attributes.country,
-                                    iata: airportIata,
+                                    iata: destinationAirportIata,
                                     icao: airport.attributes.icao,
-                                    id: Cypress._.isNumber,
+                                    id: spok.number,
                                     latitude: airport.attributes.latitude,
                                     longitude: airport.attributes.longitude,
                                     name: airport.attributes.name,
-                                    timezone: airport.attributes.timezone
+                                    timezone: airport.attributes.timezone,
                                 },
                                 kilometers: 0,
                                 miles: 0,
-                                nautical_miles: 0
+                                nautical_miles: 0,
+                                }
                             }
                         }
-                    }
-                }))
-            
-        })
-    })    
+                    })
+                )
+            })
+        })    
 
         it('checks schema', () => {
             pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
-            const departureAirportIata = departureAirport.attributes.iata
+            departureAirportIata = departureAirport.attributes.iata
             pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
                 cy.log(destinationAirport)
-                const destinationAirportIata = destinationAirport.attributes.iata
+                destinationAirportIata = destinationAirport.attributes.iata
                 cy.log('calculate distance')
                 calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).validateSchema(status_200)
                 })
@@ -132,7 +141,7 @@ describe('calculates the distance between two airports', () => {
                 it(`errors when departure airport is invalid: ${key}`, () => {
                     pickRandomAirport(totalPages, endpoints.airports).then(
                         (destinationAirport) => {
-                            const destinationAirportIata =
+                            destinationAirportIata =
                                 destinationAirport.attributes.iata
                             calculateDistanceBetweenTwoAirports(
                                 endpoints.distance,
@@ -154,7 +163,7 @@ describe('calculates the distance between two airports', () => {
                 it(`errors when destination airport is invalid: ${key}`, () => {
                     pickRandomAirport(totalPages, endpoints.airports).then(
                         (departureAirport) => {
-                            const departureAirportIata =
+                            departureAirportIata =
                                 departureAirport.attributes.iata
                             calculateDistanceBetweenTwoAirports(
                                 endpoints.distance,
@@ -171,19 +180,78 @@ describe('calculates the distance between two airports', () => {
                 })
             },
         )
-        it('errors when Iata code airport is of wrong data type', () => {
+        it('errors when both departure and destination airport are invalid',() => {
+            // generate two random invalid Iata codes
+            let invalidIataCodes = Cypress._.sampleSize(dataGenerator.invalidIATACode(), 2)
+            departureAirportIata = invalidIataCodes[0]
+            destinationAirportIata = invalidIataCodes[1]
+            calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).should(spok({
+                status: 422,
+                body: responseBody
+            }))
+        })
+
+        it('errors when departure iata required parameter is missing',() => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (destinationAirport) => {
+                    departureAirportIata = ''
+                    destinationAirportIata = destinationAirport.attributes.iata
+                    calculateDistanceBetweenTwoAirports(
+                        endpoints.distance,
+                        departureAirportIata,
+                        destinationAirportIata,
+                    ).should(
+                        spok({
+                            status: 422,
+                            body: responseBody,
+                        })
+                    )
+                }
+            ) 
+        })
+
+        it('errors when destination iata required parameter is missing',() => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (departureAirport) => {
+                    departureAirportIata = departureAirport.attributes.iata
+                    destinationAirportIata = ''
+                    calculateDistanceBetweenTwoAirports(
+                        endpoints.distance,
+                        departureAirportIata,
+                        destinationAirportIata,
+                    ).should(
+                        spok({
+                            status: 422,
+                            body: responseBody,
+                        })
+                    )
+                }
+            ) 
+        })
+
+        it('errors when both required parameters are missing',() => {
+            departureAirportIata = ''
+            destinationAirportIata = ''
+            calculateDistanceBetweenTwoAirports(
+                endpoints.distance,
+                departureAirportIata,
+                destinationAirportIata,
+            ).should(
+                spok({
+                    status: 422,
+                    body: responseBody,
+                })) 
+        })
+
+        it('errors when both iata codes are of wrong data type', () => {
             pickRandomAirport(totalPages, endpoints.airports).then(
                 (departureAirport) => {
                     cy.log(departureAirport)
-                    const departureAirportIata = [
-                        departureAirport.attributes.iata,
-                    ]
+                    departureAirportIata = [departureAirport.attributes.iata]
                     pickRandomAirport(totalPages, endpoints.airports).then(
                         (destinationAirport) => {
                             cy.log(destinationAirport)
-                            const destinationAirportIata = [
-                                destinationAirport.attributes.iata,
-                            ]
+                            destinationAirportIata = [destinationAirport.attributes.iata]
                             cy.log('calculate distance')
                             calculateDistanceBetweenTwoAirports(
                                 endpoints.distance,
@@ -193,11 +261,86 @@ describe('calculates the distance between two airports', () => {
                                 spok({
                                     status: 422,
                                     body: responseBody,
-                                }),
+                                })
                             )
-                        },
+                        }
                     )
-                },
+                }
+            )
+        })
+
+        it('errors when departure iata code is of wrong data type (array)', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (departureAirport) => {
+                    cy.log(departureAirport)
+                    departureAirportIata = [departureAirport.attributes.iata]
+                    pickRandomAirport(totalPages, endpoints.airports).then(
+                        (destinationAirport) => {
+                            cy.log(destinationAirport)
+                            destinationAirportIata = destinationAirport.attributes.iata
+                            cy.log('calculate distance')
+                            calculateDistanceBetweenTwoAirports(
+                                endpoints.distance,
+                                departureAirportIata,
+                                destinationAirportIata,
+                            ).should(
+                                spok({
+                                    status: 422,
+                                    body: responseBody,
+                                })
+                            )
+                        }
+                    )
+                }
+            )
+        })
+
+        it('errors when destination iata code is of wrong data type (array)', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (departureAirport) => {
+                    cy.log(departureAirport)
+                    departureAirportIata = departureAirport.attributes.iata
+                    pickRandomAirport(totalPages, endpoints.airports).then(
+                        (destinationAirport) => {
+                            cy.log(destinationAirport)
+                            destinationAirportIata = destinationAirport.attributes.iata
+                            cy.log('calculate distance')
+                            calculateDistanceBetweenTwoAirports(
+                                endpoints.distance,
+                                departureAirportIata,
+                                destinationAirportIata,
+                            ).should(
+                                spok({
+                                    status: 422,
+                                    body: responseBody,
+                                })
+                            )
+                        }
+                    )
+                }
+            )
+        })
+
+        it('errors when empty payload', () => {
+            calculateDistanceBetweenTwoAirports(endpoints.distance).should(
+                spok({
+                    status: 422,
+                    body: responseBody,
+                })
+            )
+        })
+
+        it('checks schema', () => {
+            pickRandomAirport(totalPages, endpoints.airports).then(
+                (destinationAirport) => {
+                    departureAirportIata = ''
+                    destinationAirportIata = destinationAirport.attributes.iata
+                    calculateDistanceBetweenTwoAirports(
+                        endpoints.distance,
+                        departureAirportIata,
+                        destinationAirportIata,
+                    ).validateSchema(status_422)
+                }
             )
         })
     })

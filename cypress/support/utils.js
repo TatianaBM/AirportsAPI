@@ -92,3 +92,13 @@ export function pickRandomAirport(totalPages, requestUrl) {
             return airportsArray[randomIndex]
         })
 }
+
+// js helper functions
+/**
+ * Checks if the given value is a number and greater than 0
+ * @param {*} value - The value to check.
+ * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
+ */
+export const isMoreThanZero = (value) => {
+    return value > 0 && typeof value === 'number'
+}
