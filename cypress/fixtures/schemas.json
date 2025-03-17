@@ -55,7 +55,7 @@
                               "type": "number"
                             },
                             "timezone": {
-                              "type": "string"
+                              "type": ["string", "null"]
                             }
                           },
                           "required": [
@@ -155,7 +155,7 @@
                     "type": "number"
                   },
                   "timezone": {
-                    "type": "string"
+                    "type":  ["string", "null"]
                   }
                 },
                 "required": [
