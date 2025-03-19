@@ -27,8 +27,8 @@
 Cypress.Commands.add('generateTokenViaUI', (email, password) => {
     cy.visit('https://airportgap.com/')
     cy.get('a').contains('Generate Token').click()
-    cy.get('input#user_email').type(email)
-    cy.get('input#user_password').type(password)
+    cy.get('input#user_email').type(email, {log: false})
+    cy.get('input#user_password').type(password, {log: false})
     cy.get('input').contains('Generate Token').click()
     cy.url().should('include', '/tokens')
     cy.get('p#user_email_address').should('contain', email)
@@ -36,6 +36,9 @@ Cypress.Commands.add('generateTokenViaUI', (email, password) => {
 
 Cypress.Commands.add('retrieveTokenFromTokensPage', () => {
     cy.get('p#user_auth_token').invoke('text').then((text => {
+        if (!text) {
+            throw new Error('Missing token value')
+        }
         const token = text.split(':')[1].trim()
         Cypress.env('authToken', token)
     }))
