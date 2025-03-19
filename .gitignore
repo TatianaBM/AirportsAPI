@@ -1,3 +1,5 @@
+# Dependency directory
 node_modules
+# Test examples
 1-getting-started
 2-advanced-examples

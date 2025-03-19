@@ -11,5 +11,29 @@
                 ]
             }
         }
+    },
+    "token": {
+        "status_401_error": {
+            "errors": [
+                {
+                    "status": "401",
+                    "title": "Unauthorized",
+                    "detail": "You are not authorized to perform the requested action."
+                }
+            ]
+        }
+    },
+    "favorite": {
+        "addFavoriteAirport": {
+            "status_422_error": {
+                "errors": [
+                    {
+                        "status": "422",
+                        "title": "Unable to process request",
+                        "detail": "Airport Please enter a valid airport code"
+                    }
+                ]
+            }
+        }
     }
 }

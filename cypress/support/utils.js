@@ -93,16 +93,6 @@ export function pickRandomAirport(totalPages, requestUrl) {
         })
 }
 
-// js helper functions
-/**
- * Checks if the given value is a number and greater than 0
- * @param {*} value - The value to check.
- * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
- */
-export const isMoreThanZero = (value) => {
-    return value > 0 && typeof value === 'number'
-}
-
 /**
  * Sends a request to receive authorization token.
  * @param {string} endpoint - The API endpoint for getting token.
@@ -120,4 +110,38 @@ export function returnToken(endpoint, email, password) {
         },
         failOnStatusCode: false
     })
+}
+/**
+ *Saves a favorite airport by sending a POST request.
+ * @param {string} requestUrl - The API endpoint to save the favorite airport.
+ * @param {string} token - The authentication token for the request.
+ * @param {Object} options - The options object containing airport details.
+ * @param {string} options.airport_id - The ID of the airport to be saved.
+ * @param {string} [options.note] - An optional note for the favorite airport.
+ * @returns {Cypress.Chainable} - Cypress request chainable response.
+ */
+export function saveFavoriteAirport(requestUrl, token, { airport_id, note }) {
+    const requestBody = { airport_id }
+    if( note !== undefined){
+        requestBody.note = note
+    }
+    return cy.request({
+        url: requestUrl,
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer token=${token}`
+        },
+        body: requestBody,
+        failOnStatusCode: false
+    })
+}
+
+// js helper functions
+/**
+ * Checks if the given value is a number and greater than 0
+ * @param {*} value - The value to check.
+ * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
+ */
+export const isMoreThanZero = (value) => {
+    return value > 0 && typeof value === 'number'
 }
