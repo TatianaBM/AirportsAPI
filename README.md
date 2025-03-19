@@ -37,3 +37,7 @@ The tests are performed on the following API base URL:
 - cy-spok - Simplifies API testing with custom Cypress commands.
 
 - @faker-js/faker - Generates dynamic test data for improved test coverage.
+
+**Test Organization**
+
+To improve the structure and maintainability of the tests, we use context blocks to separate different test scenarios. Each API endpoint has its own dedicated spec file, making it easier to manage and scale tests.

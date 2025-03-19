@@ -102,3 +102,22 @@ export function pickRandomAirport(totalPages, requestUrl) {
 export const isMoreThanZero = (value) => {
     return value > 0 && typeof value === 'number'
 }
+
+/**
+ * Sends a request to receive authorization token.
+ * @param {string} endpoint - The API endpoint for getting token.
+ * @param {string} email - users email.
+ * @param {string} password - users password.
+ * @returns {Cypress.Chainable<Response>} - A Cypress chainable object resolving to the API response.
+ */
+export function returnToken(endpoint, email, password) {
+    return cy.api({
+        url: endpoint,
+        method: 'POST',
+        body: {
+            email: email,
+            password: password
+        },
+        failOnStatusCode: false
+    })
+}
