@@ -383,5 +383,48 @@
           "errors"
         ]
       }
+    },
+    "receiveToken": {
+      "status_200": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "status_401": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "title",
+                "detail"
+              ]
+            }
+          }
+        },
+        "required": [
+          "errors"
+        ]
+      }
     } 
 }
