@@ -23,3 +23,20 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('generateTokenViaUI', (email, password) => {
+    cy.visit('https://airportgap.com/')
+    cy.get('a').contains('Generate Token').click()
+    cy.get('input#user_email').type(email)
+    cy.get('input#user_password').type(password)
+    cy.get('input').contains('Generate Token').click()
+    cy.url().should('include', '/tokens')
+    cy.get('p#user_email_address').should('contain', email)
+})
+
+Cypress.Commands.add('retrieveTokenFromTokensPage', () => {
+    cy.get('p#user_auth_token').invoke('text').then((text => {
+        const token = text.split(':')[1].trim()
+        Cypress.env('authToken', token)
+    }))
+})
