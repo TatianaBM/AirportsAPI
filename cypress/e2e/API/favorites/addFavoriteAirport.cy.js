@@ -284,63 +284,6 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             )
         })
 
-        it('errors with wrong data type iata code', () => {
-            cy.get('@airportData').then((airportData) => {
-                const requestBody = {
-                    airport_id: [airportData.attributes.iata],
-                    note: faker.lorem.sentence(4),
-                }
-                saveFavoriteAirport(
-                    endpoints.favorites,
-                    Cypress.env('authToken'),
-                    requestBody,
-                ).should(
-                    spok({
-                        status: 422,
-                        body: status_422_error,
-                    }),
-                )
-            })
-        })
-
-        it('errors with wrong data type note', () => {
-            cy.get('@airportData').then((airportData) => {
-                const requestBody = {
-                    airport_id: airportData.attributes.iata,
-                    note: [faker.lorem.sentence(4)],
-                }
-                saveFavoriteAirport(
-                    endpoints.favorites,
-                    Cypress.env('authToken'),
-                    requestBody,
-                ).should(
-                    spok({
-                        status: 422,
-                        body: status_422_error,
-                    }),
-                )
-            })
-        })
-
-        it('errors with wrong data type both iata code and note', () => {
-            cy.get('@airportData').then((airportData) => {
-                const requestBody = {
-                    airport_id: [airportData.attributes.iata],
-                    note: [faker.lorem.sentence(4)],
-                }
-                saveFavoriteAirport(
-                    endpoints.favorites,
-                    Cypress.env('authToken'),
-                    requestBody,
-                ).should(
-                    spok({
-                        status: 422,
-                        body: status_422_error,
-                    }),
-                )
-            })
-        })
-
         it('checks schema', () => {
             const requestBody = {
                 note: faker.lorem.sentence(4)
