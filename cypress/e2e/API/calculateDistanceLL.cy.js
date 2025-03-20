@@ -5,9 +5,10 @@ import { calculateDistanceBetweenTwoAirports } from "../../support/utils"
 import { endpoints } from "../../support/endpoints"
 import { dataGenerator } from "../../support/testData"
 import schemas from '../../fixtures/schemas.json'
+import errors from '../../fixtures/errors.json'
 
-const { status_200 } = schemas.calculateDistance
-const { status_422 } = schemas.calculateDistance
+const { status_200, status_422 } = schemas.calculateDistance
+const { status_422_error } = errors.calculateDistance
 const departureId = dataGenerator.validIATACode().iataCode
 const destinationId = dataGenerator.validIATACode().iataCode
 
@@ -38,15 +39,7 @@ describe('calculates the distance between two airports', () => {
             calculateDistanceBetweenTwoAirports(endpoints.distance, 'led', destinationId).should(
                 spok({
                     status: 422,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "422",
-                                "title": "Unable to process request",
-                                "detail": "Please enter valid 'from' and 'to' airports."
-                            }
-                        ]
-                    }
+                    body: status_422_error
                 })
             )
         })
@@ -55,15 +48,7 @@ describe('calculates the distance between two airports', () => {
             calculateDistanceBetweenTwoAirports(endpoints.distance, departureId, 'led').should(
                 spok({
                     status: 422,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "422",
-                                "title": "Unable to process request",
-                                "detail": "Please enter valid 'from' and 'to' airports."
-                            }
-                        ]
-                    }
+                    body: status_422_error
                 })
             )     
         })
@@ -72,15 +57,7 @@ describe('calculates the distance between two airports', () => {
             calculateDistanceBetweenTwoAirports(endpoints.distance, 'kid', 'led').should(
                 spok({
                     status: 422,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "422",
-                                "title": "Unable to process request",
-                                "detail": "Please enter valid 'from' and 'to' airports."
-                            }
-                        ]
-                    }
+                    body: status_422_error
                 })
             )     
         })

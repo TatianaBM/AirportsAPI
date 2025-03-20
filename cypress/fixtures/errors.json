@@ -1,7 +1,6 @@
 {
     "calculateDistance": {
-        "status_422": {
-            "responseBody": {
+        "status_422_error": {        
                 "errors": [
                     {
                         "status": "422",
@@ -9,7 +8,6 @@
                         "detail": "Please enter valid 'from' and 'to' airports."
                     }
                 ]
-            }
         }
     },
     "token": {
@@ -35,5 +33,16 @@
                 ]
             }
         }
-    }
+    },
+    "getAirportById": {
+        "status_404_error" : {
+            "errors": [
+                {
+                    "status": "404",
+                    "title": "Not Found",
+                    "detail": "The page you requested could not be found"
+                }
+            ]
+        }
+    } 
 }

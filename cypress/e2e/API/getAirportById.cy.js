@@ -10,9 +10,10 @@ import { endpoints } from '../../support/endpoints'
 import airports from '../../fixtures/airports.json'
 import schemas from '../../fixtures/schemas.json'
 import { dataGenerator } from '../../support/testData'
+import errors from '../../fixtures/errors.json'
 
-const { status_200 } = schemas.getAirportById
-const { status_404 } = schemas.getAirportById
+const { status_200, status_404 } = schemas.getAirportById
+const { status_404_error } = errors.getAirportById
 const invalidTestData = dataGenerator.invalidIATACode()
 const validTestData = dataGenerator.validIATACode()
 
@@ -70,15 +71,7 @@ describe('get the airport by ID', () => {
                 fetchAirportById(endpoints.airports, invalidTestData[invalidId]).should(
                     spok({
                         status: 404,
-                        body: {
-                            "errors": [
-                                {
-                                    "status": "404",
-                                    "title": "Not Found",
-                                    "detail": "The page you requested could not be found"
-                                }
-                            ]
-                        }
+                        body: status_404_error
                     })
                 )
             })
