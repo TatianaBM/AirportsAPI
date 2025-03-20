@@ -7,7 +7,7 @@ import { dataGenerator } from '../../support/testData'
 import errors from '../../fixtures/errors.json'
 
 const { status_200, status_422 } = schemas.calculateDistance
-const { responseBody } = errors.calculateDistance.status_422
+const { status_422_error } = errors.calculateDistance
 
 describe('calculates the distance between two airports', () => {
     let totalPages
@@ -150,7 +150,7 @@ describe('calculates the distance between two airports', () => {
                             ).should(
                                 spok({
                                     status: 422,
-                                    body: responseBody,
+                                    body: status_422_error,
                                 }),
                             )
                         },
@@ -172,7 +172,7 @@ describe('calculates the distance between two airports', () => {
                             ).should(
                                 spok({
                                     status: 422,
-                                    body: responseBody,
+                                    body: status_422_error,
                                 }),
                             )
                         },
@@ -187,7 +187,7 @@ describe('calculates the distance between two airports', () => {
             destinationAirportIata = invalidIataCodes[1]
             calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).should(spok({
                 status: 422,
-                body: responseBody
+                body: status_422_error
             }))
         })
 
@@ -203,7 +203,7 @@ describe('calculates the distance between two airports', () => {
                     ).should(
                         spok({
                             status: 422,
-                            body: responseBody,
+                            body: status_422_error,
                         })
                     )
                 }
@@ -222,7 +222,7 @@ describe('calculates the distance between two airports', () => {
                     ).should(
                         spok({
                             status: 422,
-                            body: responseBody,
+                            body: status_422_error,
                         })
                     )
                 }
@@ -239,7 +239,7 @@ describe('calculates the distance between two airports', () => {
             ).should(
                 spok({
                     status: 422,
-                    body: responseBody,
+                    body: status_422_error,
                 })) 
         })
 
@@ -260,7 +260,7 @@ describe('calculates the distance between two airports', () => {
                             ).should(
                                 spok({
                                     status: 422,
-                                    body: responseBody,
+                                    body: status_422_error,
                                 })
                             )
                         }
@@ -286,7 +286,7 @@ describe('calculates the distance between two airports', () => {
                             ).should(
                                 spok({
                                     status: 422,
-                                    body: responseBody,
+                                    body: status_422_error,
                                 })
                             )
                         }
@@ -312,7 +312,7 @@ describe('calculates the distance between two airports', () => {
                             ).should(
                                 spok({
                                     status: 422,
-                                    body: responseBody,
+                                    body: status_422_error,
                                 })
                             )
                         }
@@ -325,7 +325,7 @@ describe('calculates the distance between two airports', () => {
             calculateDistanceBetweenTwoAirports(endpoints.distance).should(
                 spok({
                     status: 422,
-                    body: responseBody,
+                    body: status_422_error,
                 })
             )
         })
