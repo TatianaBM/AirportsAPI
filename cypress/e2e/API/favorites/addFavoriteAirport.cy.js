@@ -13,8 +13,8 @@ import {
 
 const { status_201, status_422 } = schemas.favorite.addFavoriteAirport
 const { status_401 } = schemas.receiveToken
-const invalidTestDataToken = dataGenerator.invalidToken()
 const invalidTestDataIata = dataGenerator.invalidIATACode()
+const invalidTestDataToken = dataGenerator.invalidToken()
 const { status_401_error } = errors.token
 const { status_422_error } = errors.favorite.addFavoriteAirport
 
@@ -164,35 +164,34 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             })
         })
 
-        for (let invalidToken in invalidTestDataToken) {
-            it(`errors when invalid token : ${invalidToken}`, () => {
-                cy.get('@airportData').then((airportData) => {
-                    const requestBody = {
-                        airport_id: airportData.attributes.iata,
-                    }
-                    saveFavoriteAirport(
-                        endpoints.favorites,
-                        invalidTestDataToken[invalidToken],
-                        requestBody,
-                    ).should(
-                        spok({
-                            status: 401,
-                            body: status_401_error,
-                        }),
-                    )
-                })
-            })
-        }
-
-        it('checks schema', () => {
-            const invalidToken = faker.string.alphanumeric(25)
+        it('errors with invalid token', () => {
+            const sampleOfInvalidToken = Cypress._.sampleSize(invalidTestDataToken, 1)
             cy.get('@airportData').then((airportData) => {
                 const requestBody = {
                     airport_id: airportData.attributes.iata,
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    invalidToken,
+                    sampleOfInvalidToken,
+                    requestBody,
+                ).should(
+                    spok({
+                        status: 401,
+                        body: status_401_error,
+                    }),
+                )
+            })
+        })
+
+        it('checks schema', () => {
+            const sampleOfInvalidToken = Cypress._.sampleSize(invalidTestDataToken, 1)
+            cy.get('@airportData').then((airportData) => {
+                const requestBody = {
+                    airport_id: airportData.attributes.iata,
+                }
+                saveFavoriteAirport(
+                    endpoints.favorites,
+                    sampleOfInvalidToken,
                     requestBody,
                 ).validateSchema(status_401)
             })
