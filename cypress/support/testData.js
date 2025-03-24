@@ -34,6 +34,12 @@ export const dataGenerator = {
             'null value': null,
             'undefined value': undefined
         }
+    },
+    note: function() {
+        return faker.lorem.sentence(5)
+    },
+    invalidFavoritRecordId: function() {
+        return faker.number.int(100)
     }
 
 }

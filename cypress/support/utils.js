@@ -145,3 +145,36 @@ export function saveFavoriteAirport(requestUrl, token, { airport_id, note }) {
 export const isMoreThanZero = (value) => {
     return value > 0 && typeof value === 'number'
 }
+
+/**
+ *Updates the note of one of favorite airports by sending a PATCH request.
+ * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
+ * @param {string} token - The authentication token for the request.
+ * @param {string} favoriteRecordId - The ID of the favorite record whose note needs to be updated.
+ * @param {string} note - An optional note to update for the favorite airport.
+ * @returns {Cypress.Chainable} - Cypress request chainable response.
+ */
+export function updateNoteOfFavoriteAirport(endpoint, favoriteRecordId, token, note) {
+    return cy.api({
+        url: `${endpoint}/${favoriteRecordId}`,
+        method: 'PATCH',
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        body: {
+            note: note
+        },
+        failOnStatusCode: false
+    })
+}
+
+export function clearAllFavoriteAirports(endpoint, token) {
+    return cy.api({
+        url: endpoint,
+        method: 'DELETE',
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        failOnStatusCode: false
+    })
+}
