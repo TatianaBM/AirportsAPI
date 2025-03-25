@@ -178,3 +178,24 @@ export function clearAllFavoriteAirports(endpoint, token) {
         failOnStatusCode: false
     })
 }
+
+/**
+ * Authenticates a user and stores the received token as an environment variable in Cypress.
+ * @param {string} endpoint - The API endpoint for authentication.
+ * @param {string} email - The user's email address.
+ * @param {string} password - The user's password.
+ * @returns {Cypress.Chainable} A Cypress chainable containing token.
+ * @throws {Error} If the token is missing or not a string.
+ */
+export function setTokenAsEnvVariable(endpoint, email, password) {
+    returnToken(endpoint, email, password).should((response) => {
+            expect(response.status).to.eq(200)
+        })
+        .its('body.token')
+        .then((token) => {
+            if (!token || typeof token !== 'string') {
+                throw new Error('Missing token value or wrong data type')
+            }
+            Cypress.env('token', token)
+        })
+}
