@@ -26,7 +26,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
     }
     let token
     before('set token as an environmental variable', () => {
-        setTokenAsEnvVariable(endpoints.token, userCredentials)
+        setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
         cy.then(() => token = Cypress.env('token'))
     })
 
