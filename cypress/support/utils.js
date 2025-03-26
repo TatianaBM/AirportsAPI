@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker'
+
 // api support functions
 /**
  * Fetches a list of airports from the specified API endpoint
@@ -147,6 +149,24 @@ export const isMoreThanZero = (value) => {
 }
 
 /**
+ * Checks if a given value is an empty string.
+ * @param {string} string - The input value to check.
+ * @returns {boolean} Returns `true` if the input is a string and has a length of `0`, otherwise `false`. 
+ */
+export const isEmptyString = (string) => {
+    return string.length === 0 && typeof string === 'string'
+}
+
+/**
+ * Checks if a given string contains the substring "text/plain" (case-insensitive).
+ * @param {string} string - The input string to check.
+ * @returns {boolean} Returns `true` if the string is non-empty, is of type string, and includes "text/plain"; otherwise, returns `false`.
+ */
+export const includesTextPlain = (string) => {
+    return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
+}
+
+/**
  *Updates the note of one of favorite airports by sending a PATCH request.
  * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
  * @param {string} token - The authentication token for the request.
@@ -198,4 +218,48 @@ export function setTokenAsEnvVariable(endpoint, email, password) {
             }
             Cypress.env('token', token)
         })
+}
+
+/**
+ * Retrieves all favorite airports from the given API endpoint.
+ * @param {string} endpoint - The API endpoint to fetch favorite airports.
+ * @param {string} token - The authentication token for authorization.
+ * @returns {Cypress.Chainable} A Cypress chainable containing the API response.
+ */
+export function retrieveAllFavoriteAirports(endpoint, token) {
+    return cy.request({
+        url: endpoint,
+        method: 'GET', 
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        failOnStatusCode: false
+    })
+}
+
+/**
+ * * Adds a random number (between 1 and 10) of favorite airports by selecting random airports
+ * and saving them as favorites.
+ * @param {string} endpointAirports - The API endpoint to fetch airport data.
+ * @param {string} endpointsFavorites - The API endpoint to save favorite airports.
+ * @param {string} token - The authentication token for the API requests.
+ * @returns {void} This function does not return a value but performs API operations.
+ */
+export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFavorites, token) {
+    const randomNumber = Cypress._.random(1, 10)
+    retrieveTotalPages(endpointAirports).then((totalPages) => {
+        Cypress._.times(randomNumber, () => {
+            pickRandomAirport(totalPages, endpointAirports).then(
+                (airportData) => {
+                    const requestBody = {
+                        airport_id: airportData.attributes.iata,
+                        note: faker.lorem.sentence(5),
+                    }
+                    saveFavoriteAirport(endpointsFavorites, token, requestBody)
+                        .its('status')
+                        .should('eq', 201)
+                }
+            )
+        })
+    })
 }
