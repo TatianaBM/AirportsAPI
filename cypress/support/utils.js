@@ -188,6 +188,12 @@ export function updateNoteOfFavoriteAirport(endpoint, favoriteRecordId, token, n
     })
 }
 
+/**
+ *Clears all favorite airports by sending a DELETE request.
+ * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Cypress.Chainable} - Cypress request chainable response.
+ */
 export function clearAllFavoriteAirports(endpoint, token) {
     return cy.api({
         url: endpoint,
