@@ -18,7 +18,7 @@ const { status_401 } = schemas.receiveToken
 const invalidTestDataIata = dataGenerator.invalidIATACode()
 const invalidTestDataToken = dataGenerator.invalidToken()
 const { status_401_error } = errors.token
-const { status_422_error } = errors.favorite.addFavoriteAirport
+const { status_422_error_2, status_422_error_1 } = errors.favorite.addFavoriteAirport
 
 describe('/favorites allows you to save a favorite airport to your Airport Gap account', () => {
 
@@ -247,7 +247,7 @@ describe('/favorites allows you to save a favorite airport to your Airport Gap a
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
         })
@@ -265,7 +265,7 @@ describe('/favorites allows you to save a favorite airport to your Airport Gap a
                 ).should(
                     spok({
                         status: 422,
-                        body: status_422_error,
+                        body: status_422_error_1,
                     }),
                 )
             })
@@ -282,7 +282,7 @@ describe('/favorites allows you to save a favorite airport to your Airport Gap a
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
         })
@@ -296,9 +296,33 @@ describe('/favorites allows you to save a favorite airport to your Airport Gap a
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
+        })
+
+        it('errors when saving the same airport as a favorite', () => {
+            cy.get('@airportData').then(airportData => {
+                const requestBody = {
+                    airport_id: airportData.attributes.iata,
+                    note: faker.lorem.sentence(5),
+                }
+                cy.log('save the airpot as a favorite')
+                saveFavoriteAirport(
+                    endpoints.favorites,
+                    Cypress.env('token'),
+                    requestBody
+                ).its('status').should('eq', 201)
+                cy.log('attempt to save the same airpot as a favorite')
+                saveFavoriteAirport(
+                    endpoints.favorites,
+                    Cypress.env('token'),
+                    requestBody
+                ).should(spok({
+                    status: 422,
+                    body: status_422_error_2
+                }))
+            })
         })
 
         it('checks schema', () => {
