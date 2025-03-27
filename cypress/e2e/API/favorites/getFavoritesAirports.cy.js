@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import airports from '../../../fixtures/airports.json'
 import { endpoints } from '../../../support/endpoints'
 import errors from '../../../fixtures/errors.json'
 import spok from 'cy-spok'
@@ -7,10 +8,10 @@ import { dataGenerator } from '../../../support/testData'
 import {
     setTokenAsEnvVariable,
     clearAllFavoriteAirports,
-    isEmptyString,
-    includesTextPlain,
     retrieveAllFavoriteAirports,
     addRandomNumberOfFavoriteAirports,
+    retrieveTotalPagesFavoriteAirports,
+    getNumberOfPagesFavAirport,
 } from '../../../support/utils'
 
 const { status_401_error } = errors.token
@@ -28,31 +29,39 @@ describe('/favorites returns all the favorite airports saved to your Airport Gap
         setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
     })
 
+    beforeEach('precondition', () => {
+        cy.log('add favorite airports and save favorite airports data as an alias')
+        const randomNumberFavAirports = Cypress._.random(1,30)
+        addRandomNumberOfFavoriteAirports(
+            endpoints.airports,
+            endpoints.favorites,
+            Cypress.env('token'),
+            randomNumberFavAirports,
+            'favAirportData'
+        )
+        getNumberOfPagesFavAirport(randomNumberFavAirports, airports.pagination.defaultLimit).as('totalFavPages')
+    })
+
+    afterEach(() => {
+        clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
+            (response) => expect(response.status).to.equal(204)
+        )
+    })
+
     context('200 status code', () => {
 
-        beforeEach('precondition', () => {
-            cy.log('add favorite airports and save favorite airports data as an alias')
-            addRandomNumberOfFavoriteAirports(endpoints.airports, endpoints.favorites, Cypress.env('token'), 'favAirportData')
-        })
-
-        afterEach(() => {
-            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
-                (response) => expect(response.status).to.equal(204)
-            )
-        })
-
-        it('retrieves favorite airports saved to account', function() {
+        it('retrieves favorite airports saved to account - fist page', function() {
             retrieveAllFavoriteAirports(endpoints.favorites, Cypress.env('token')).should(spok({
                 status: 200,
                 body: {
-                    data: spok.arrayElements(this.favAirportData.length)
-                },
-                links: {
-                    first: link,
-                    self: link,
-                    last: `${link}?page=1`,
-                    prev: `${link}`,
-                    next: `${link}`,
+                    data: spok.arrayElements(this.favAirportData.length),
+                    links: {
+                        first: link,
+                        self: link,
+                        last: `${link}?page=${this.totalFavPages}`,
+                        prev: `${link}`,
+                        next: `${link}`,
+                    }
                 }
             }))
         })

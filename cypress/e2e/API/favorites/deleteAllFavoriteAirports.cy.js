@@ -29,7 +29,8 @@ describe('/favorites/clear_all', () => {
     context('204 status code', () => {
 
         before('precondition', () => {
-            addRandomNumberOfFavoriteAirports(endpoints.airports, endpoints.favorites, Cypress.env('token'))
+            const randomNumberFavAirports = Cypress._.random(1,15)
+            addRandomNumberOfFavoriteAirports(endpoints.airports, endpoints.favorites, Cypress.env('token'), randomNumberFavAirports)
         })
 
         it('deletes all favorite airports', () => {
