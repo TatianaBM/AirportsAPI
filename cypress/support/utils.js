@@ -251,9 +251,10 @@ export function retrieveAllFavoriteAirports(endpoint, token) {
  * @param {string} token - The authentication token for the API requests.
  * @returns {void} This function does not return a value but performs API operations.
  */
-export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFavorites, token) {
+export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFavorites, token, aliasName = 'favoriteAirportList') {
     const randomNumber = Cypress._.random(1, 10)
     retrieveTotalPages(endpointAirports).then((totalPages) => {
+        let favoriteAirportList = []
         Cypress._.times(randomNumber, () => {
             pickRandomAirport(totalPages, endpointAirports).then(
                 (airportData) => {
@@ -262,10 +263,16 @@ export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFav
                         note: faker.lorem.sentence(5),
                     }
                     saveFavoriteAirport(endpointsFavorites, token, requestBody)
-                        .its('status')
-                        .should('eq', 201)
+                        .should((response) => {
+                            expect(response.status).to.eq(201)
+                        })
+                        .its('body')
+                        .then(body => {
+                            favoriteAirportList.push(body.data)
+                        })
                 }
             )
         })
+        cy.wrap(favoriteAirportList).as(`${aliasName}`)
     })
 }
