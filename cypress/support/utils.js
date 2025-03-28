@@ -138,34 +138,6 @@ export function saveFavoriteAirport(requestUrl, token, { airport_id, note }) {
     })
 }
 
-// js helper functions
-/**
- * Checks if the given value is a number and greater than 0
- * @param {*} value - The value to check.
- * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
- */
-export const isMoreThanZero = (value) => {
-    return value > 0 && typeof value === 'number'
-}
-
-/**
- * Checks if a given value is an empty string.
- * @param {string} string - The input value to check.
- * @returns {boolean} Returns `true` if the input is a string and has a length of `0`, otherwise `false`. 
- */
-export const isEmptyString = (string) => {
-    return string.length === 0 && typeof string === 'string'
-}
-
-/**
- * Checks if a given string contains the substring "text/plain" (case-insensitive).
- * @param {string} string - The input string to check.
- * @returns {boolean} Returns `true` if the string is non-empty, is of type string, and includes "text/plain"; otherwise, returns `false`.
- */
-export const includesTextPlain = (string) => {
-    return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
-}
-
 /**
  *Updates the note of one of favorite airports by sending a PATCH request.
  * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
@@ -232,7 +204,7 @@ export function setTokenAsEnvVariable(endpoint, email, password) {
  * @param {string} token - The authentication token for authorization.
  * @returns {Cypress.Chainable} A Cypress chainable containing the API response.
  */
-export function retrieveAllFavoriteAirports(endpoint, token) {
+export function fetchAllFavoriteAirports(endpoint, token) {
     return cy.request({
         url: endpoint,
         method: 'GET', 
@@ -322,4 +294,32 @@ export function getNumberOfPagesFavAirport(numberAirports, defaultLimit) {
         totalPages = Math.round(numberAirports/defaultLimit)
     }
     return cy.wrap(totalPages)
+}
+
+// js helper functions
+/**
+ * Checks if the given value is a number and greater than 0
+ * @param {*} value - The value to check.
+ * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
+ */
+export const isMoreThanZero = (value) => {
+    return value > 0 && typeof value === 'number'
+}
+
+/**
+ * Checks if a given value is an empty string.
+ * @param {string} string - The input value to check.
+ * @returns {boolean} Returns `true` if the input is a string and has a length of `0`, otherwise `false`. 
+ */
+export const isEmptyString = (string) => {
+    return string.length === 0 && typeof string === 'string'
+}
+
+/**
+ * Checks if a given string contains the substring "text/plain" (case-insensitive).
+ * @param {string} string - The input string to check.
+ * @returns {boolean} Returns `true` if the string is non-empty, is of type string, and includes "text/plain"; otherwise, returns `false`.
+ */
+export const includesTextPlain = (string) => {
+    return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
 }
