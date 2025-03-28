@@ -9,7 +9,8 @@ import {
     saveFavoriteAirport,
     pickRandomAirport,
     retrieveTotalPages,
-    setTokenAsEnvVariable
+    setTokenAsEnvVariable,
+    clearAllFavoriteAirports
 } from '../../../support/utils'
 
 const { status_201, status_422 } = schemas.favorite.addFavoriteAirport
@@ -17,21 +18,22 @@ const { status_401 } = schemas.receiveToken
 const invalidTestDataIata = dataGenerator.invalidIATACode()
 const invalidTestDataToken = dataGenerator.invalidToken()
 const { status_401_error } = errors.token
-const { status_422_error } = errors.favorite.addFavoriteAirport
+const { status_422_error_2, status_422_error_1 } = errors.favorite.addFavoriteAirport
 
-describe('allows you to save a favorite airport to your Airport Gap account', () => {
+describe('/favorites allows you to save a favorite airport to your Airport Gap account', () => {
+
     const userCredentials = {
         email: Cypress.env('email'),
         password: Cypress.env('password')
     }
-    let token
+
     before('set token as an environmental variable', () => {
         setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
-        cy.then(() => token = Cypress.env('token'))
     })
 
     context('201 status code', () => {
-        beforeEach('arrange', () => {
+
+        beforeEach('precondition', () => {
             cy.log('pick a random airport')
             retrieveTotalPages(endpoints.airports).then((totalPages) => {
                 pickRandomAirport(totalPages, endpoints.airports).then(
@@ -42,6 +44,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             })
         })
 
+        afterEach(() => {
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
+                (response) => expect(response.status).to.equal(204)
+            )
+        })
+
         it('adds favorite airport with optional parameter note', () => {
             cy.get('@airportData').then((airportData) => {
                 const requestBody = {
@@ -50,7 +58,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    token,
+                    Cypress.env('token'),
                     requestBody,
                 ).should(
                     spok({
@@ -92,7 +100,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    token,
+                    Cypress.env('token'),
                     requestBody,
                 ).should(
                     spok({
@@ -135,7 +143,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    token,
+                    Cypress.env('token'),
                     requestBody,
                 ).validateSchema(status_201)
             })
@@ -148,7 +156,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    token,
+                    Cypress.env('token'),
                     requestBody,
                 ).validateSchema(status_201)
             })
@@ -156,6 +164,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
     })
 
     context('401 status code', () => {
+
         beforeEach('precondition', () => {
             cy.log('pick a random airport')
             retrieveTotalPages(endpoints.airports).then((totalPages) => {
@@ -165,6 +174,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                     },
                 )
             })
+        })
+
+        afterEach(() => {
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
+                (response) => expect(response.status).to.equal(204)
+            )
         })
 
         it('errors with invalid token', () => {
@@ -202,6 +217,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
     })
 
     context('422 status code', () => {
+
         beforeEach('precondition', () => {
             cy.log('pick a random airport')
             retrieveTotalPages(endpoints.airports).then((totalPages) => {
@@ -213,6 +229,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             })
         })
 
+        afterEach(() => {
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
+                (response) => expect(response.status).to.equal(204)
+            )
+        })
+
         it('errors with empty iata code ', () => {
             const requestBody = {
                 airport_id: '',
@@ -220,12 +242,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             }
             saveFavoriteAirport(
                 endpoints.favorites,
-                token,
+                Cypress.env('token'),
                 requestBody,
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
         })
@@ -238,12 +260,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
                 }
                 saveFavoriteAirport(
                     endpoints.favorites,
-                    token,
+                    Cypress.env('token'),
                     requestBody,
                 ).should(
                     spok({
                         status: 422,
-                        body: status_422_error,
+                        body: status_422_error_1,
                     }),
                 )
             })
@@ -255,12 +277,12 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             }
             saveFavoriteAirport(
                 endpoints.favorites,
-                token,
+                Cypress.env('token'),
                 requestBody,
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
         })
@@ -269,14 +291,38 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             const requestBody = {}
             saveFavoriteAirport(
                 endpoints.favorites,
-                token,
+                Cypress.env('token'),
                 requestBody,
             ).should(
                 spok({
                     status: 422,
-                    body: status_422_error,
+                    body: status_422_error_1,
                 }),
             )
+        })
+
+        it('errors when saving the same airport as a favorite', () => {
+            cy.get('@airportData').then(airportData => {
+                const requestBody = {
+                    airport_id: airportData.attributes.iata,
+                    note: faker.lorem.sentence(5),
+                }
+                cy.log('save the airpot as a favorite')
+                saveFavoriteAirport(
+                    endpoints.favorites,
+                    Cypress.env('token'),
+                    requestBody
+                ).its('status').should('eq', 201)
+                cy.log('attempt to save the same airpot as a favorite')
+                saveFavoriteAirport(
+                    endpoints.favorites,
+                    Cypress.env('token'),
+                    requestBody
+                ).should(spok({
+                    status: 422,
+                    body: status_422_error_2
+                }))
+            })
         })
 
         it('checks schema', () => {
@@ -285,7 +331,7 @@ describe('allows you to save a favorite airport to your Airport Gap account', ()
             }
             saveFavoriteAirport(
                 endpoints.favorites,
-                token,
+                Cypress.env('token'),
                 requestBody,
             ).validateSchema(status_422)
         })
