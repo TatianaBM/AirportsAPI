@@ -4,657 +4,692 @@
             "schema_1": {
                 "type": "object",
                 "properties": {
-                  "data": {
-                    "type": "array",
-                    "items": {}
-                  }
+                    "data": {
+                        "type": "array",
+                        "items": {}
+                    }
                 },
-                "required": [
-                  "data"
-                ]
+                "required": ["data"]
             },
             "schema_2": {
                 "type": "object",
                 "properties": {
-                  "data": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "type": {
-                          "type": "string"
-                        },
-                        "attributes": {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "type": "string"
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "iata": {
+                                            "type": "string"
+                                        },
+                                        "icao": {
+                                            "type": "string"
+                                        },
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        },
+                                        "altitude": {
+                                            "type": "number"
+                                        },
+                                        "timezone": {
+                                            "type": ["string", "null"]
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "city",
+                                        "country",
+                                        "iata",
+                                        "icao",
+                                        "latitude",
+                                        "longitude",
+                                        "altitude",
+                                        "timezone"
+                                    ]
+                                }
                             },
-                            "city": {
-                              "type": "string"
-                            },
-                            "country": {
-                              "type": "string"
-                            },
-                            "iata": {
-                              "type": "string"
-                            },
-                            "icao": {
-                              "type": "string"
-                            },
-                            "latitude": {
-                              "type": "string"
-                            },
-                            "longitude": {
-                              "type": "string"
-                            },
-                            "altitude": {
-                              "type": "number"
-                            },
-                            "timezone": {
-                              "type": ["string", "null"]
-                            }
-                          },
-                          "required": [
-                            "name",
-                            "city",
-                            "country",
-                            "iata",
-                            "icao",
-                            "latitude",
-                            "longitude",
-                            "altitude",
-                            "timezone"
-                          ]
+                            "required": ["id", "type", "attributes"]
                         }
-                      },
-                      "required": [
-                        "id",
-                        "type",
-                        "attributes"
-                      ]
-                    }
-                  },
-                  "links": {
-                    "type": "object",
-                    "properties": {
-                      "first": {
-                        "type": "string"
-                      },
-                      "self": {
-                        "type": "string"
-                      },
-                      "last": {
-                        "type": "string"
-                      },
-                      "prev": {
-                        "type": "string"
-                      },
-                      "next": {
-                        "type": "string"
-                      }
                     },
-                    "required": [
-                      "first",
-                      "self",
-                      "last",
-                      "prev",
-                      "next"
-                    ]
-                  }
+                    "links": {
+                        "type": "object",
+                        "properties": {
+                            "first": {
+                                "type": "string"
+                            },
+                            "self": {
+                                "type": "string"
+                            },
+                            "last": {
+                                "type": "string"
+                            },
+                            "prev": {
+                                "type": "string"
+                            },
+                            "next": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["first", "self", "last", "prev", "next"]
+                    }
                 },
-                "required": [
-                  "data",
-                  "links"
-                ]
-              
+                "required": ["data", "links"]
             }
         }
     },
     "getAirportById": {
-      "status_200": {
-        "type": "object",
-        "properties": {
-          "data": {
+        "status_200": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "attributes": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "city": {
-                    "type": "string"
-                  },
-                  "country": {
-                    "type": "string"
-                  },
-                  "iata": {
-                    "type": "string"
-                  },
-                  "icao": {
-                    "type": "string"
-                  },
-                  "latitude": {
-                    "type": "string"
-                  },
-                  "longitude": {
-                    "type": "string"
-                  },
-                  "altitude": {
-                    "type": "number"
-                  },
-                  "timezone": {
-                    "type":  ["string", "null"]
-                  }
-                },
-                "required": [
-                  "name",
-                  "city",
-                  "country",
-                  "iata",
-                  "icao",
-                  "latitude",
-                  "longitude",
-                  "altitude",
-                  "timezone"
-                ]
-              }
-            },
-            "required": [
-              "id",
-              "type",
-              "attributes"
-            ]
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "status_404": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "detail": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "status",
-                "title",
-                "detail"
-              ]
-            }
-          }
-        },
-        "required": [
-          "errors"
-        ]
-      }
-    },
-    "calculateDistance": {
-      "status_200": {
-        "type": "object",
-              "properties": {
                 "data": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "attributes": {
-                      "type": "object",
-                      "properties": {
-                        "from_airport": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "number"
-                            },
-                            "name": {
-                              "type": "string"
-                            },
-                            "city": {
-                              "type": "string"
-                            },
-                            "country": {
-                              "type": "string"
-                            },
-                            "iata": {
-                              "type": "string"
-                            },
-                            "icao": {
-                              "type": "string"
-                            },
-                            "latitude": {
-                              "type": "string"
-                            },
-                            "longitude": {
-                              "type": "string"
-                            },
-                            "altitude": {
-                              "type": "number"
-                            },
-                            "timezone": {
-                              "type":  ["string", "null"]
-                            }
-                          },
-                          "required": [
-                            "id",
-                            "name",
-                            "city",
-                            "country",
-                            "iata",
-                            "icao",
-                            "latitude",
-                            "longitude",
-                            "altitude",
-                            "timezone"
-                          ]
-                        },
-                        "to_airport": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "number"
-                            },
-                            "name": {
-                              "type": "string"
-                            },
-                            "city": {
-                              "type": "string"
-                            },
-                            "country": {
-                              "type": "string"
-                            },
-                            "iata": {
-                              "type": "string"
-                            },
-                            "icao": {
-                              "type": "string"
-                            },
-                            "latitude": {
-                              "type": "string"
-                            },
-                            "longitude": {
-                              "type": "string"
-                            },
-                            "altitude": {
-                              "type": "number"
-                            },
-                            "timezone": {
-                              "type": ["string", "null"]
-                            }
-                          },
-                          "required": [
-                            "id",
-                            "name",
-                            "city",
-                            "country",
-                            "iata",
-                            "icao",
-                            "latitude",
-                            "longitude",
-                            "altitude",
-                            "timezone"
-                          ]
-                        },
-                        "kilometers": {
-                          "type": "number"
-                        },
-                        "miles": {
-                          "type": "number"
-                        },
-                        "nautical_miles": {
-                          "type": "number"
-                        }
-                      },
-                      "required": [
-                        "from_airport",
-                        "to_airport",
-                        "kilometers",
-                        "miles",
-                        "nautical_miles"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "type",
-                    "attributes"
-                  ]
-                }
-              },
-              "required": [
-                "data"
-              ]
-      },     
-      "status_422": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "detail": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "status",
-                "title",
-                "detail"
-              ]
-            }
-          }
-        },
-        "required": [
-          "errors"
-        ]
-      }
-    },
-    "receiveToken": {
-      "status_200": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "token"
-        ]
-      },
-      "status_401": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "detail": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "status",
-                "title",
-                "detail"
-              ]
-            }
-          }
-        },
-        "required": [
-          "errors"
-        ]
-      }
-    },
-    "favorite": {
-      "addFavoriteAirport": {
-        "status_201": {
-          "type": "object",
-          "properties": {
-            "data": {
-              "type": "object",
-              "properties": {
-                "attributes": {
-                  "type": "object",
-                  "properties": {
-                    "airport": {
-                      "type": "object",
-                      "properties": {
-                        "altitude": {
-                          "type": "number"
-                        },
-                        "city": {
-                          "type": "string"
-                        },
-                        "country": {
-                          "type": "string"
-                        },
-                        "iata": {
-                          "type": "string"
-                        },
-                        "icao": {
-                          "type": "string"
-                        },
-                        "id": {
-                          "type": "number"
-                        },
-                        "latitude": {
-                          "type": "string"
-                        },
-                        "longitude": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "timezone": {
-                          "type": ["string", "null"]
-                        }
-                      },
-                      "required": [
-                        "altitude",
-                        "city",
-                        "country",
-                        "iata",
-                        "icao",
-                        "id",
-                        "latitude",
-                        "longitude",
-                        "name",
-                        "timezone"
-                      ]
-                    },
-                    "note": {
-                      "type": ["string", "null"]
-                    }
-                  },
-                  "required": [
-                    "airport", 
-                    "note"
-                  ]
-                },
-                "id": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "attributes",
-                "id",
-                "type"
-              ]
-            }
-          },
-          "required": [
-            "data"
-          ]
-        },
-        "status_422": {
-          "type": "object",
-          "properties": {
-            "errors": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "type": "string"
-                  },
-                  "detail": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "status",
-                  "title",
-                  "detail"
-                ]
-              }
-            }
-          },
-          "required": [
-            "errors"
-          ]
-        }
-      }
-    },
-    "updateNoteOfFavoriteAirport": {
-      "status_200": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "attributes": {
-                "type": "object",
-                "properties": {
-                  "airport": {
                     "type": "object",
                     "properties": {
-                      "id": {
-                        "type": "number"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "city": {
-                        "type": "string"
-                      },
-                      "country": {
-                        "type": "string"
-                      },
-                      "iata": {
-                        "type": "string"
-                      },
-                      "icao": {
-                        "type": "string"
-                      },
-                      "latitude": {
-                        "type": "string"
-                      },
-                      "longitude": {
-                        "type": "string"
-                      },
-                      "altitude": {
-                        "type": "number"
-                      },
-                      "timezone": {
-                        "type": ["string", "null"]
+                        "id": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "attributes": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "city": {
+                                    "type": "string"
+                                },
+                                "country": {
+                                    "type": "string"
+                                },
+                                "iata": {
+                                    "type": "string"
+                                },
+                                "icao": {
+                                    "type": "string"
+                                },
+                                "latitude": {
+                                    "type": "string"
+                                },
+                                "longitude": {
+                                    "type": "string"
+                                },
+                                "altitude": {
+                                    "type": "number"
+                                },
+                                "timezone": {
+                                    "type": ["string", "null"]
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "city",
+                                "country",
+                                "iata",
+                                "icao",
+                                "latitude",
+                                "longitude",
+                                "altitude",
+                                "timezone"
+                            ]
+                        }
+                    },
+                    "required": ["id", "type", "attributes"]
+                }
+            },
+            "required": ["data"]
+        },
+        "status_404": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "detail": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["status", "title", "detail"]
+                    }
+                }
+            },
+            "required": ["errors"]
+        }
+    },
+    "calculateDistance": {
+        "status_200": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "attributes": {
+                            "type": "object",
+                            "properties": {
+                                "from_airport": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "iata": {
+                                            "type": "string"
+                                        },
+                                        "icao": {
+                                            "type": "string"
+                                        },
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        },
+                                        "altitude": {
+                                            "type": "number"
+                                        },
+                                        "timezone": {
+                                            "type": ["string", "null"]
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "city",
+                                        "country",
+                                        "iata",
+                                        "icao",
+                                        "latitude",
+                                        "longitude",
+                                        "altitude",
+                                        "timezone"
+                                    ]
+                                },
+                                "to_airport": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "iata": {
+                                            "type": "string"
+                                        },
+                                        "icao": {
+                                            "type": "string"
+                                        },
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        },
+                                        "altitude": {
+                                            "type": "number"
+                                        },
+                                        "timezone": {
+                                            "type": ["string", "null"]
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "city",
+                                        "country",
+                                        "iata",
+                                        "icao",
+                                        "latitude",
+                                        "longitude",
+                                        "altitude",
+                                        "timezone"
+                                    ]
+                                },
+                                "kilometers": {
+                                    "type": "number"
+                                },
+                                "miles": {
+                                    "type": "number"
+                                },
+                                "nautical_miles": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "from_airport",
+                                "to_airport",
+                                "kilometers",
+                                "miles",
+                                "nautical_miles"
+                            ]
+                        }
+                    },
+                    "required": ["id", "type", "attributes"]
+                }
+            },
+            "required": ["data"]
+        },
+        "status_422": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "detail": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["status", "title", "detail"]
+                    }
+                }
+            },
+            "required": ["errors"]
+        }
+    },
+    "receiveToken": {
+        "status_200": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            },
+            "required": ["token"]
+        },
+        "status_401": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "detail": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["status", "title", "detail"]
+                    }
+                }
+            },
+            "required": ["errors"]
+        }
+    },
+    "favorite": {
+        "addFavoriteAirport": {
+            "status_201": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "airport": {
+                                        "type": "object",
+                                        "properties": {
+                                            "altitude": {
+                                                "type": "number"
+                                            },
+                                            "city": {
+                                                "type": "string"
+                                            },
+                                            "country": {
+                                                "type": "string"
+                                            },
+                                            "iata": {
+                                                "type": "string"
+                                            },
+                                            "icao": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "number"
+                                            },
+                                            "latitude": {
+                                                "type": "string"
+                                            },
+                                            "longitude": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "timezone": {
+                                                "type": ["string", "null"]
+                                            }
+                                        },
+                                        "required": [
+                                            "altitude",
+                                            "city",
+                                            "country",
+                                            "iata",
+                                            "icao",
+                                            "id",
+                                            "latitude",
+                                            "longitude",
+                                            "name",
+                                            "timezone"
+                                        ]
+                                    },
+                                    "note": {
+                                        "type": ["string", "null"]
+                                    }
+                                },
+                                "required": ["airport", "note"]
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["attributes", "id", "type"]
+                    }
+                },
+                "required": ["data"]
+            },
+            "status_422": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "detail": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["status", "title", "detail"]
+                        }
+                    }
+                },
+                "required": ["errors"]
+            }
+        },
+        "fetchFavoriteAirport": {
+            "status_200": {
+                "schema_1": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "attributes": {
+                                        "type": "object",
+                                        "properties": {
+                                            "airport": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "city": {
+                                                        "type": ["string", "null"]
+                                                    },
+                                                    "country": {
+                                                        "type": "string"
+                                                    },
+                                                    "iata": {
+                                                        "type": "string"
+                                                    },
+                                                    "icao": {
+                                                        "type": "string"
+                                                    },
+                                                    "latitude": {
+                                                        "type": "string"
+                                                    },
+                                                    "longitude": {
+                                                        "type": "string"
+                                                    },
+                                                    "altitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "timezone": {
+                                                        "type": ["string", "null"]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "city",
+                                                    "country",
+                                                    "iata",
+                                                    "icao",
+                                                    "latitude",
+                                                    "longitude",
+                                                    "altitude"
+                                                ]
+                                            },
+                                            "note": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": ["airport"]
+                                    }
+                                },
+                                "required": ["id", "type", "attributes"]
+                            }
+                        },
+                        "links": {
+                            "type": "object",
+                            "properties": {
+                                "first": {
+                                    "type": "string"
+                                },
+                                "self": {
+                                    "type": "string"
+                                },
+                                "last": {
+                                    "type": "string"
+                                },
+                                "prev": {
+                                    "type": "string"
+                                },
+                                "next": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["first", "self", "last", "prev", "next"]
+                        }
+                    },
+                    "required": ["data", "links"]
+                },
+                "schema_2": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {}
                       }
                     },
                     "required": [
-                      "id",
-                      "name",
-                      "city",
-                      "country",
-                      "iata",
-                      "icao",
-                      "latitude",
-                      "longitude",
-                      "altitude",
-                      "timezone"
+                      "data"
                     ]
-                  },
-                  "note": ["string", "null"]
-                },
-                "required": [
-                  "airport",
-                  "note"
-                ]
-              }
-            },
-            "required": [
-              "id",
-              "type",
-              "attributes"
-            ]
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "status_404": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "detail": {
-                  "type": "string"
                 }
-              },
-              "required": [
-                "status",
-                "title",
-                "detail"
-              ]
             }
-          }
+        }
+    },
+    "updateNoteOfFavoriteAirport": {
+        "status_200": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "attributes": {
+                            "type": "object",
+                            "properties": {
+                                "airport": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "country": {
+                                            "type": "string"
+                                        },
+                                        "iata": {
+                                            "type": "string"
+                                        },
+                                        "icao": {
+                                            "type": "string"
+                                        },
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        },
+                                        "altitude": {
+                                            "type": "number"
+                                        },
+                                        "timezone": {
+                                            "type": ["string", "null"]
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "city",
+                                        "country",
+                                        "iata",
+                                        "icao",
+                                        "latitude",
+                                        "longitude",
+                                        "altitude",
+                                        "timezone"
+                                    ]
+                                },
+                                "note": ["string", "null"]
+                            },
+                            "required": ["airport", "note"]
+                        }
+                    },
+                    "required": ["id", "type", "attributes"]
+                }
+            },
+            "required": ["data"]
         },
-        "required": [
-          "errors"
-        ]
-      }
+        "status_404": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "detail": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["status", "title", "detail"]
+                    }
+                }
+            },
+            "required": ["errors"]
+        }
     }
 }
