@@ -23,12 +23,21 @@
     },
     "favorite": {
         "addFavoriteAirport": {
-            "status_422_error": {
+            "status_422_error_1": {
                 "errors": [
                     {
                         "status": "422",
                         "title": "Unable to process request",
                         "detail": "Airport Please enter a valid airport code"
+                    }
+                ]
+            },
+            "status_422_error_2" : {
+                "errors": [
+                    {
+                        "status": "422",
+                        "title": "Unable to process request",
+                        "detail": "Airport This airport is already in your favorites"
                     }
                 ]
             }
