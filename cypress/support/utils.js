@@ -138,34 +138,6 @@ export function saveFavoriteAirport(requestUrl, token, { airport_id, note }) {
     })
 }
 
-// js helper functions
-/**
- * Checks if the given value is a number and greater than 0
- * @param {*} value - The value to check.
- * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
- */
-export const isMoreThanZero = (value) => {
-    return value > 0 && typeof value === 'number'
-}
-
-/**
- * Checks if a given value is an empty string.
- * @param {string} string - The input value to check.
- * @returns {boolean} Returns `true` if the input is a string and has a length of `0`, otherwise `false`. 
- */
-export const isEmptyString = (string) => {
-    return string.length === 0 && typeof string === 'string'
-}
-
-/**
- * Checks if a given string contains the substring "text/plain" (case-insensitive).
- * @param {string} string - The input string to check.
- * @returns {boolean} Returns `true` if the string is non-empty, is of type string, and includes "text/plain"; otherwise, returns `false`.
- */
-export const includesTextPlain = (string) => {
-    return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
-}
-
 /**
  *Updates the note of one of favorite airports by sending a PATCH request.
  * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
@@ -232,7 +204,7 @@ export function setTokenAsEnvVariable(endpoint, email, password) {
  * @param {string} token - The authentication token for authorization.
  * @returns {Cypress.Chainable} A Cypress chainable containing the API response.
  */
-export function retrieveAllFavoriteAirports(endpoint, token) {
+export function fetchAllFavoriteAirports(endpoint, token) {
     return cy.request({
         url: endpoint,
         method: 'GET', 
@@ -244,17 +216,24 @@ export function retrieveAllFavoriteAirports(endpoint, token) {
 }
 
 /**
- * * Adds a random number (between 1 and 10) of favorite airports by selecting random airports
- * and saving them as favorites.
- * @param {string} endpointAirports - The API endpoint to fetch airport data.
+ * Adds a random number of favorite airports by selecting airports from available pages and sending POST requests.
+ * @param {string} endpointAirports - The API endpoint to fetch available airports.
  * @param {string} endpointsFavorites - The API endpoint to save favorite airports.
- * @param {string} token - The authentication token for the API requests.
- * @returns {void} This function does not return a value but performs API operations.
+ * @param {string} token - The authentication token for authorization.
+ * @param {string} [aliasName='favoriteAirportList'] - The alias under which the favorite airport list will be stored in Cypress.
+ * @param {number} totalNumberOfFavAirports - The total number of favorite airports to add.
+ * @returns {void} The function wraps the favorite airport list using Cypress' `cy.wrap()`.
  */
-export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFavorites, token) {
-    const randomNumber = Cypress._.random(1, 10)
-    retrieveTotalPages(endpointAirports).then((totalPages) => {
-        Cypress._.times(randomNumber, () => {
+export function addRandomNumberOfFavoriteAirports(
+    endpointAirports,
+    endpointsFavorites,
+    token,
+    totalNumberOfFavAirports,
+    aliasName = 'favoriteAirportList'
+    ) {
+        retrieveTotalPages(endpointAirports).then((totalPages) => {
+        let favoriteAirportList = []
+        Cypress._.times(totalNumberOfFavAirports, () => {
             pickRandomAirport(totalPages, endpointAirports).then(
                 (airportData) => {
                     const requestBody = {
@@ -262,10 +241,85 @@ export function addRandomNumberOfFavoriteAirports(endpointAirports, endpointsFav
                         note: faker.lorem.sentence(5),
                     }
                     saveFavoriteAirport(endpointsFavorites, token, requestBody)
-                        .its('status')
-                        .should('eq', 201)
-                }
+                        .should((response) => {
+                            expect(response.status).to.eq(201)
+                        })
+                        .its('body')
+                        .then((body) => {
+                            favoriteAirportList.push(body.data)
+                        })
+                },
             )
         })
+        cy.wrap(favoriteAirportList).as(`${aliasName}`)
     })
+}
+
+/**
+ * Fetches a paginated list of favorite airports from the given API endpoint.
+ *
+ * @param {string} requestUrl - The API endpoint to fetch favorite airports.
+ * @param {number} pageNumber - The page number to retrieve.
+ * @param {string} token - The authentication token for authorization.
+ * @returns {Cypress.Chainable} A Cypress chainable containing the API response.
+ */
+export function fetchFavoriteAirportsByPage(requestUrl, pageNumber, token) {
+    return cy.api({
+        url: requestUrl,
+        method: 'GET',
+        qs: {
+            page : pageNumber
+        },
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        failOnStatusCode: false
+    })
+}
+
+/**
+ * Calculates the total number of pages based on the total number of airports
+ * and the default limit per page.
+ *
+ * @param {number} numberAirports - The total number of favorite airports.
+ * @param {number} defaultLimit - The number of airports displayed per page.
+ * @returns {Cypress.Chainable<number>} A Cypress-wrapped promise resolving to the total number of pages.
+ */
+export function getNumberOfPagesFavAirport(numberAirports, defaultLimit) {
+    let totalPages
+    if(numberAirports === defaultLimit || numberAirports/defaultLimit < 1) {
+        totalPages = 1
+    }
+    else {
+        totalPages = Math.round(numberAirports/defaultLimit)
+    }
+    return cy.wrap(totalPages)
+}
+
+// js helper functions
+/**
+ * Checks if the given value is a number and greater than 0
+ * @param {*} value - The value to check.
+ * @returns {boolean} - Returns `true` if the value is a number greater than 0, otherwise `false`.
+ */
+export const isMoreThanZero = (value) => {
+    return value > 0 && typeof value === 'number'
+}
+
+/**
+ * Checks if a given value is an empty string.
+ * @param {string} string - The input value to check.
+ * @returns {boolean} Returns `true` if the input is a string and has a length of `0`, otherwise `false`. 
+ */
+export const isEmptyString = (string) => {
+    return string.length === 0 && typeof string === 'string'
+}
+
+/**
+ * Checks if a given string contains the substring "text/plain" (case-insensitive).
+ * @param {string} string - The input string to check.
+ * @returns {boolean} Returns `true` if the string is non-empty, is of type string, and includes "text/plain"; otherwise, returns `false`.
+ */
+export const includesTextPlain = (string) => {
+    return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
 }

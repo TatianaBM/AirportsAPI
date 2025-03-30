@@ -28,8 +28,14 @@ describe('/favorites/clear_all', () => {
 
     context('204 status code', () => {
 
-        before('precondition', () => {
-            addRandomNumberOfFavoriteAirports(endpoints.airports, endpoints.favorites, Cypress.env('token'))
+        before('precondition: add favorite airports', () => {
+            const randomNumberFavAirports = Cypress._.random(1,15)
+            addRandomNumberOfFavoriteAirports(
+                endpoints.airports,
+                endpoints.favorites,
+                Cypress.env('token'),
+                randomNumberFavAirports,
+            )
         })
 
         it('deletes all favorite airports', () => {
@@ -53,8 +59,14 @@ describe('/favorites/clear_all', () => {
 
     context('401 status code', () => {
 
-        beforeEach('precondition', () => {
-            addRandomNumberOfFavoriteAirports(endpoints.airports, endpoints.favorites, Cypress.env('token'))
+        beforeEach('precondition: add favorite airports', () => {
+            const randomNumberFavAirports = Cypress._.random(1,30)
+            addRandomNumberOfFavoriteAirports(
+                endpoints.airports,
+                endpoints.favorites,
+                Cypress.env('token'),
+                randomNumberFavAirports,
+            )
         })
         
         it('should error with invalid token', () => {
