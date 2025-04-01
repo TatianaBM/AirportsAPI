@@ -10,7 +10,9 @@ import { dataGenerator } from '../../../support/testData'
 import errors from '../../../fixtures/errors.json'
 import schemas from '../../../fixtures/schemas.json'
 
+const { status_401_error } = errors.token
 const { status_404_error } = errors.getAirportById
+const { status_401 } = schemas.receiveToken
 const { status_404 } = schemas.getAirportById
 
 const email = Cypress.env('email')
@@ -26,11 +28,8 @@ describe('delete one of the favorite airport by record ID', () => {
            
         beforeEach('precondition: add favorite airports', () => {
             const randomNumber = Cypress._.random(1, 7)
-            cy.log(randomNumber)
-
             addFavoriteAirportsAndReturnIdList(randomNumber, endpoints.favorites, Cypress.env('token'))
-                .then(arrayOfId => cy.wrap(arrayOfId).as('airportIdList'))
-            
+                .then(arrayOfId => cy.wrap(arrayOfId).as('airportIdList'))    
         })
 
         afterEach('clear all favorite airports', () => {
@@ -89,6 +88,34 @@ describe('delete one of the favorite airport by record ID', () => {
             const wrongRecordId = dataGenerator.invalidFavoritRecordId()
             deleteFavoriteAirportById(endpoints.favorites, wrongRecordId, Cypress.env('token'))
                 .validateSchema(status_404)
+        })
+
+    })
+
+    context('401 status code', () => {
+
+        beforeEach('precondition: add favorite airports', () => {
+            const randomNumber = Cypress._.random(1, 5)
+            addFavoriteAirportsAndReturnIdList(randomNumber, endpoints.favorites, Cypress.env('token'))
+                .then(arrayOfId => cy.wrap(arrayOfId).as('airportIdList'))            
+        })
+
+        it('error by sending request without token', () => {
+            cy.get('@airportIdList').then(airportIdList => {
+                airportIdList.forEach(id => {
+                    deleteFavoriteAirportById(endpoints.favorites, id).then(response => {
+                        expect(response.status).to.equal(401)
+                        expect(response.body).to.deep.equal(status_401_error)
+                    })
+                })
+            })
+        })
+
+        it('verifies schema for request without token', () => {
+            cy.get('@airportIdList').then(airportIdList => {
+                deleteFavoriteAirportById(endpoints.favorites, airportIdList[0])
+                    .validateSchema(status_401)
+            })
         })
     })
 
