@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { dataGenerator } from './testData'
 
 // api support functions
 /**
@@ -162,13 +163,31 @@ export function updateNoteOfFavoriteAirport(endpoint, favoriteRecordId, token, n
 
 /**
  *Clears all favorite airports by sending a DELETE request.
- * @param {string} endpoint - The API endpoint to update the note of the favorite airport.
+ * @param {string} endpoint - The API endpoint to delete all favorite airports.
  * @param {string} token - The authentication token for the request.
  * @returns {Cypress.Chainable} - Cypress request chainable response.
  */
 export function clearAllFavoriteAirports(endpoint, token) {
     return cy.api({
         url: endpoint,
+        method: 'DELETE',
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        failOnStatusCode: false
+    })
+}
+
+/**
+ *Clears one of favorite airports by its ID via sending a DELETE request.
+ * @param {string} endpoint - The API endpoint to delete one of the favorite airport.
+ * @param {string} airportId - The favorite airport ID.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Cypress.Chainable} - Cypress request chainable response.
+ */
+export function deleteFavoriteAirportById(endpoint, airportId, token) {
+    return cy.api({
+        url: `${endpoint}/${airportId}`,
         method: 'DELETE',
         headers: {
             "Authorization": `Bearer token=${token}`
@@ -322,4 +341,30 @@ export const isEmptyString = (string) => {
  */
 export const includesTextPlain = (string) => {
     return string.length !== 0 && typeof string === 'string' && string.toLowerCase().includes('text/plain')
+}
+
+/**
+ * Adds a random number of favorite airports and returns list of favorite airports ID.
+ * @param {number} randomNumber - The random number of airports that need to add.
+ * @param {string} endpoint - The API endpoint to save favorite airports.
+ * @param {string} token - The authentication token for authorization.
+ * @param {string} [aliasName='favoriteAirportList'] - The alias under which the favorite airport list will be stored in Cypress.
+ * @param {object} requestBody - The airport iata code and note that need to add to favorite.
+ * @returns {array} Returns array of favorit airports ID.
+ */
+export function addFavoriteAirportsAndReturnIdList(randomNumber, endpoint, token) {
+    const arrayOfId = []
+    Cypress._.times(randomNumber, () => {
+        const requestBody = {
+            airport_id: dataGenerator.validIATACode().iataCode,
+            note: dataGenerator.note()
+        }
+        cy.log(requestBody.airport_id)
+        saveFavoriteAirport(endpoint, token, requestBody)
+            .then(response => {
+                expect(response.status, 'status code').to.equal(201)
+                arrayOfId.push(response.body.data.id)
+        })
+    })
+    return cy.wrap(arrayOfId)
 }

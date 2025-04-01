@@ -657,7 +657,7 @@
                                         "timezone"
                                     ]
                                 },
-                                "note": ["string", "null"]
+                                "note": {}
                             },
                             "required": ["airport", "note"]
                         }
