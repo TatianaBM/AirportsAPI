@@ -39,7 +39,7 @@ export const dataGenerator = {
         return faker.lorem.sentence(5)
     },
     invalidFavoritRecordId: function() {
-        return faker.number.int(100)
+        return faker.number.int(10000)
     }
 
 }

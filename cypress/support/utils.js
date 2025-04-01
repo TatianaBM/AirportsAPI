@@ -179,15 +179,15 @@ export function clearAllFavoriteAirports(endpoint, token) {
 }
 
 /**
- *Clears one of favorite airports by its ID via sending a DELETE request.
+ *Clears one of favorite airports by its record ID via sending a DELETE request.
  * @param {string} endpoint - The API endpoint to delete one of the favorite airport.
- * @param {string} airportId - The favorite airport ID.
+ * @param {string} favoriteRecordId - The ID of the favorite record.
  * @param {string} token - The authentication token for the request.
  * @returns {Cypress.Chainable} - Cypress request chainable response.
  */
-export function deleteFavoriteAirportById(endpoint, airportId, token) {
+export function deleteFavoriteAirportById(endpoint, favoriteRecordId, token) {
     return cy.api({
-        url: `${endpoint}/${airportId}`,
+        url: `${endpoint}/${favoriteRecordId}`,
         method: 'DELETE',
         headers: {
             "Authorization": `Bearer token=${token}`
