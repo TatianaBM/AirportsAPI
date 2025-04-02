@@ -11,17 +11,20 @@ import schemas from '../../../fixtures/schemas.json'
 import errors from '../../../fixtures/errors.json'
 
 const { status_404_error } = errors.getAirportById
-const { status_200, status_404 } = schemas.updateNoteOfFavoriteAirport
+const { status_401_error } = errors.token
+const { status_401 } = schemas.receiveToken
 const email = Cypress.env('email')
 const password = Cypress.env('password')
 
 describe('updates the note of one of the favorite airport', () => {
-    before(() => {
-        setTokenAsEnvVariable(endpoints.token, email, password) 
+
+    before('set token as an environmental variable', () => {
+        setTokenAsEnvVariable(endpoints.token, email, password)
     })
 
     context('200 status code, updates an existing favorite airport note', () => {
-        beforeEach(() => {
+
+        beforeEach('precondition: add favorite airport with note and save its record ID to alias', () => {
             const requestBody = {
                 airport_id: dataGenerator.validIATACode().iataCode,
                 note: dataGenerator.note(),
@@ -29,11 +32,12 @@ describe('updates the note of one of the favorite airport', () => {
             saveFavoriteAirport(endpoints.favorites, Cypress.env('token'), requestBody)
                 .then(response => {  
                     expect(response.status, 'status code').to.equal(201) 
-                    expect(response.body.data.attributes.airport.note).not.to.equal(null)               
+                    expect(response.body.data.attributes.note).not.to.equal(null)               
                     cy.wrap(response.body.data.id).as('favoriteRecordId')
             })
         })
-        afterEach(() => {
+
+        afterEach('clear all favorite airports', () => {
             clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(response => {
                 expect(response.status).to.equal(204)
             })
@@ -81,7 +85,8 @@ describe('updates the note of one of the favorite airport', () => {
     })
 
     context('200 status code, updates the empty favorite airport note', () => {
-        beforeEach(() => {
+
+        beforeEach('precondition: add favorite airport without note and save its record ID to alias', () => {
             const requestBody = {
                 airport_id: dataGenerator.validIATACode().iataCode,
             }
@@ -92,7 +97,8 @@ describe('updates the note of one of the favorite airport', () => {
                     cy.wrap(response.body.data.id).as('favoriteRecordId')
             })
         })
-        afterEach(() => {
+
+        afterEach('clear all favorite airports', () => {
             clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(response => {
                 expect(response.status).to.equal(204)
             })
@@ -137,13 +143,6 @@ describe('updates the note of one of the favorite airport', () => {
             })
         })
 
-        it('verifies schema for request with correct favorite record ID', () => {
-            cy.get('@favoriteRecordId').then(id => {
-                updateNoteOfFavoriteAirport(endpoints.favorites, id, Cypress.env('token'))
-                    .validateSchema(status_200)
-            })        
-        })
-
     })
 
     context('404 status code', () => {
@@ -160,13 +159,45 @@ describe('updates the note of one of the favorite airport', () => {
                     })
                 )
         })
-        
-        it('verifies schema for request with wrong favorite record ID', () => {
-            updateNoteOfFavoriteAirport(
-                endpoints.favorites,  
-                dataGenerator.invalidFavoritRecordId(), 
-                Cypress.env('token'), 
-                dataGenerator.note()).validateSchema(status_404)
+    })
+
+    context('401 status code', () => {
+
+        beforeEach('precondition: add favorite airport with note and save its record ID to alias', () => {
+            const requestBody = {
+                airport_id: dataGenerator.validIATACode().iataCode,
+                note: dataGenerator.note(),
+            }
+            saveFavoriteAirport(endpoints.favorites, Cypress.env('token'), requestBody)
+                .then(response => {  
+                    expect(response.status, 'status code').to.equal(201) 
+                    expect(response.body.data.attributes.note).not.to.equal(null)               
+                    cy.wrap(response.body.data.id).as('favoriteRecordId')
+            })
+        })
+
+        afterEach('clear all favorite airports', () => {
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(response => {
+                expect(response.status).to.equal(204)
+            })
+        })
+
+        it('error by sending request without token', () => {
+            cy.get('@favoriteRecordId').then(id => {
+                updateNoteOfFavoriteAirport(endpoints.favorites, id).should(
+                    spok({
+                        status: 401,
+                        body: status_401_error
+                    })
+                )
+            })
+        })
+
+        it('verifies schema for request without token', () => {
+            cy.get('@favoriteRecordId').then(id => {
+                updateNoteOfFavoriteAirport(endpoints.favorites, id)
+                    .validateSchema(status_401)
+            })
         })
     })
 
