@@ -197,6 +197,24 @@ export function deleteFavoriteAirportById(endpoint, favoriteRecordId, token) {
 }
 
 /**
+ *Returns one of favorite airports by its record ID via sending a GET request.
+ * @param {string} endpoint - The API endpoint to get one of the favorite airport.
+ * @param {string} favoriteRecordId - The ID of the favorite record.
+ * @param {string} token - The authentication token for the request.
+ * @returns {Cypress.Chainable} - Cypress request chainable response.
+ */
+export function getFavoriteAirportByRecordId(endpoint, favoriteRecordId, token) {
+    return cy.api({
+        url: `${endpoint}/${favoriteRecordId}`,
+        method: 'GET',
+        headers: {
+            "Authorization": `Bearer token=${token}`
+        },
+        failOnStatusCode: false
+    })
+}
+
+/**
  * Authenticates a user and stores the received token as an environment variable in Cypress.
  * @param {string} endpoint - The API endpoint for authentication.
  * @param {string} email - The user's email address.
