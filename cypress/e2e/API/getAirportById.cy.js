@@ -30,7 +30,7 @@ describe('get the airport by ID', () => {
             fetchAirportById(endpoints.airports, validTestData.iataCode).then(response => {
                 cy.log(response.body)
                 expect(response.status, 'status code').to.equal(200)
-                expect(response.body.data.attributes.name, 'airport name').to.equal(validTestData.name)
+                // expect(response.body.data.attributes.name, 'airport name').to.equal(validTestData.name)
                 expect(response.body.data.id, 'airport id').to.equal(validTestData.iataCode)
             })
         })

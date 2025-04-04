@@ -13,6 +13,7 @@ import errors from '../../../fixtures/errors.json'
 const { status_404_error } = errors.getAirportById
 const { status_401_error } = errors.token
 const { status_401 } = schemas.receiveToken
+const { status_200, status_404 } = schemas.updateNoteOfFavoriteAirport
 const email = Cypress.env('email')
 const password = Cypress.env('password')
 
@@ -143,6 +144,13 @@ describe('updates the note of one of the favorite airport', () => {
             })
         })
 
+        it('verifies schema for request with correct favorite record ID', () => {
+            cy.get('@favoriteRecordId').then(id => {
+                updateNoteOfFavoriteAirport(endpoints.favorites, id, Cypress.env('token'))
+                    .validateSchema(status_200)
+            })        
+        })
+
     })
 
     context('404 status code', () => {
@@ -158,6 +166,14 @@ describe('updates the note of one of the favorite airport', () => {
                         body: status_404_error
                     })
                 )
+        })
+
+        it('verifies schema for request with wrong favorite record ID', () => {
+            updateNoteOfFavoriteAirport(
+                endpoints.favorites,  
+                dataGenerator.invalidFavoritRecordId(), 
+                Cypress.env('token'), 
+                dataGenerator.note()).validateSchema(status_404)
         })
     })
 
