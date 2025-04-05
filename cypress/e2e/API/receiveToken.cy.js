@@ -2,26 +2,33 @@
 import spok from 'cy-spok'
 
 import { dataGenerator } from "../../support/testData"
-import { returnToken } from "../../support/utils"
+import { returnToken, setTokenAsEnvVariable } from "../../support/utils"
 import { endpoints } from "../../support/endpoints"
+import errors from '../../fixtures/errors.json'
 import schemas from '../../fixtures/schemas.json'
 
+const { status_401_error } = errors.token
 const { status_200 } = schemas.receiveToken
 const { status_401 } = schemas.receiveToken
+
+const email = Cypress.env('email')
+const password = Cypress.env('password')
 
 describe('receive token', () => {
 
     context('registered user', () => {
-        let user = dataGenerator.userData()
+        // let user = dataGenerator.userData()
         before(() => { 
-            cy.generateTokenViaUI(user.email, user.password)
-            cy.retrieveTokenFromTokensPage()
+            // not used because of captcha:
+            // cy.generateTokenViaUI(user.email, user.password)
+            // cy.retrieveTokenFromTokensPage()
+            setTokenAsEnvVariable(endpoints.token, email, password)
         })
 
         it('returns the API token with correct credentials', () => {
-            returnToken(endpoints.token, user.email, user.password).then(response => {
+            returnToken(endpoints.token, email, password).then(response => {
                 expect(response.status, 'status code').to.equal(200)
-                if (response.body.token !== Cypress.env('authToken')) {
+                if (response.body.token !== Cypress.env('token')) {
                     throw new Error('Not correct token value')
                 }
                 if (response.body.token.length !== 24 || typeof(response.body.token) !== 'string') {
@@ -31,40 +38,24 @@ describe('receive token', () => {
         })
 
         it('verifies schema for request with correct credentials', () => {
-            returnToken(endpoints.token, user.email, user.password)
+            returnToken(endpoints.token, email, password)
                 .validateSchema(status_200)
         })
 
         it('error by sending request without email', () => {
-            returnToken(endpoints.token, '', user.password).should(
+            returnToken(endpoints.token, '', password).should(
                 spok({
                     status: 401,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "401",
-                                "title": "Unauthorized",
-                                "detail": "You are not authorized to perform the requested action."
-                            }
-                        ]
-                    }
+                    body: status_401_error
                 })
             )
         })
 
         it('error by sending request without password', () => {
-            returnToken(endpoints.token, user.email, '').should(
+            returnToken(endpoints.token, email, '').should(
                 spok({
                     status: 401,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "401",
-                                "title": "Unauthorized",
-                                "detail": "You are not authorized to perform the requested action."
-                            }
-                        ]
-                    }
+                    body: status_401_error
                 })
             )
         })
@@ -73,33 +64,17 @@ describe('receive token', () => {
             returnToken(endpoints.token, '', '').should(
                 spok({
                     status: 401,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "401",
-                                "title": "Unauthorized",
-                                "detail": "You are not authorized to perform the requested action."
-                            }
-                        ]
-                    }
+                    body: status_401_error
                 })
             )
         })
 
         it('error by sending request with invalid password', () => {
             let invalidPassword = dataGenerator.userData().password
-            returnToken(endpoints.token, user.email, invalidPassword).should(
+            returnToken(endpoints.token, email, invalidPassword).should(
                 spok({
                     status: 401,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "401",
-                                "title": "Unauthorized",
-                                "detail": "You are not authorized to perform the requested action."
-                            }
-                        ]
-                    }
+                    body: status_401_error
                 })
             )
         })
@@ -113,15 +88,7 @@ describe('receive token', () => {
             returnToken(endpoints.token, user.email, user.password).should(
                 spok({
                     status: 401,
-                    body: {
-                        "errors": [
-                            {
-                                "status": "401",
-                                "title": "Unauthorized",
-                                "detail": "You are not authorized to perform the requested action."
-                            }
-                        ]
-                    }
+                    body: status_401_error
                 })
             )
         })
