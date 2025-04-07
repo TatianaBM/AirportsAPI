@@ -17,6 +17,7 @@
 import './commands'
 import 'cypress-plugin-api'
 import 'cypress-ajv-schema-validator'
+import 'cypress-mochawesome-reporter/register'
 
 before(()=>{
     Cypress.on('uncaught:exception', (err, runnable) => {
