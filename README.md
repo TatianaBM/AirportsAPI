@@ -40,6 +40,14 @@ For successful test execution on your local machine, you need to register on the
 
 `npx cypress open`
 
+For more details on available test scripts, check the `scripts` section in the `package.json` file. To run a script, use:  
+
+`npm run <script-name>`  
+
+For example:  
+
+`npm run test:run:chrome`
+
 **Plugins Used:**
 
 - cypress-ajv-schema-validator - Validates API responses against JSON schemas to ensure data integrity.
@@ -49,6 +57,8 @@ For successful test execution on your local machine, you need to register on the
 - cy-spok - Simplifies API testing with custom Cypress commands.
 
 - @faker-js/faker - Generates dynamic test data for improved test coverage.
+
+- cypress-mochawesome-reporter - Generates detailed, visually rich test reports with screenshots and videos embedded for easier debugging.
 
 **Test Organization**
 
