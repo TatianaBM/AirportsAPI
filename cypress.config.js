@@ -11,7 +11,7 @@ module.exports = defineConfig({
     // reportFilename: '"[status]_[datetime]-[name]-report"',
     charts: true,                   // Show charts (e.g., pie charts) in the HTML report
     embeddedScreenshots: true,      // Embed screenshots directly into the report
-    inlineAssets: false,            // Inline JS/CSS into HTML file (no external links)
+    inlineAssets: true,            // Inline JS/CSS into HTML file (no external links)
     saveAllAttempts: true,          // Save screenshots from all retry attempts, set to false to save only the last attempt
     overwrite: true,                // Overwrite previous reports
     videoOnFailOnly: true           // Add the videos to report only to tests with failures
