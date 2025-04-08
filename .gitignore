@@ -11,3 +11,6 @@ cypress.env.json
 #reports
 cypress/results
 cypress/screenshots
+cypress/videos
+
+cypress/downloads
