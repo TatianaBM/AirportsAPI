@@ -14,7 +14,7 @@ const { status_401 } = schemas.receiveToken
 const email = Cypress.env('email')
 const password = Cypress.env('password')
 
-describe('receive token', () => {
+describe('receive token', {tags: ['@smoke', 'token']}, () => {
 
     context('registered user', () => {
         // let user = dataGenerator.userData()

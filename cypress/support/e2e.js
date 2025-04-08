@@ -18,6 +18,8 @@ import './commands'
 import 'cypress-plugin-api'
 import 'cypress-ajv-schema-validator'
 import 'cypress-mochawesome-reporter/register'
+import registerCypressGrep from '@bahmutov/cy-grep/src/support'
+registerCypressGrep()
 
 before(()=>{
     Cypress.on('uncaught:exception', (err, runnable) => {
