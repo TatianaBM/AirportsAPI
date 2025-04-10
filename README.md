@@ -60,6 +60,8 @@ For example:
 
 - cypress-mochawesome-reporter - Generates detailed, visually rich test reports with screenshots and videos embedded for easier debugging.
 
+- @bahmutov/cy-grep - Enables running only specific tests by filtering them based on keywords in their `it` or `describe` titles.
+
 **Test Organization**
 
 To improve the structure and maintainability of the tests, we use context blocks to separate different test scenarios. Each API endpoint has its own dedicated spec file, making it easier to manage and scale tests.
