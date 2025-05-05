@@ -8,7 +8,10 @@
     "cy:open": "cypress open",
     "cy:favorite:run": "npm run cy:run -- --spec 'cypress/e2e/API/favorites/*'",
     "cy:favorite:headed:chrome": "npm run cy:run -- --spec 'cypress/e2e/API/favorites/*' --headed --browser chrome",
-    "cy:run:smoke": "cypress run --env grepTags=@smoke"
+    "cy:run:smoke": "cypress run --env grepTags=@smoke",
+    "cy:sandbox": "npm run cy:run --env type-of-environment=sandbox",
+    "cy:staging": "npm run cy:run --env type-of-environment=staging",
+    "cy:favorite:staging": "npm run cy:favorite:run -- --env type-of-environment=staging"
   },
   "author": "",
   "license": "ISC",
