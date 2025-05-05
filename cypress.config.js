@@ -16,11 +16,25 @@ module.exports = defineConfig({
     overwrite: true,                // Overwrite previous reports
     videoOnFailOnly: true           // Add the videos to report only to tests with failures
   },
+  env: {
+    "staging": {
+      "baseUrl": "https://airportgap.com/api"
+    },
+    "sandbox": {
+      "baseUrl": "https://airportgap-sandbox.com/api"
+    },
+    "preprod": {
+      "baseUrl": "https://airportgap-preprod.com/api"
+    }
+  },
   e2e: {
-    baseUrl: 'https://airportgap.com/api',
     retries: 1,
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on)
+      const envName = config.env['type-of-environment'] || 'staging'
+      const envType = config.env[envName] 
+      config.baseUrl = envType.baseUrl;
+      return config
     },
   },
 });
