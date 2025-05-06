@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+const fs = require('fs');
 
 module.exports = defineConfig({
   viewportHeight: 1080,
@@ -33,7 +34,9 @@ module.exports = defineConfig({
       require('cypress-mochawesome-reporter/plugin')(on)
       const envName = config.env['type-of-environment'] || 'staging'
       const envType = config.env[envName] 
-      config.baseUrl = envType.baseUrl;
+      config.baseUrl = envType.baseUrl
+      const credentials = JSON.parse(fs.readFileSync('cypress.env.json'))
+      config.env.credentials = credentials.userSecrets[envName]
       return config
     },
   },

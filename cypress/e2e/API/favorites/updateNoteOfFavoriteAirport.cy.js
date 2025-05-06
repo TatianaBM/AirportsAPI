@@ -14,10 +14,10 @@ const { status_404_error } = errors.getAirportById
 const { status_401_error } = errors.token
 const { status_401 } = schemas.receiveToken
 const { status_200, status_404 } = schemas.updateNoteOfFavoriteAirport
-const email = Cypress.env('email')
-const password = Cypress.env('password')
 
 describe('updates the note of one of the favorite airport', () => {
+
+    const { email, password } = Cypress.env('credentials')
 
     before('set token as an environmental variable', () => {
         setTokenAsEnvVariable(endpoints.token, email, password)

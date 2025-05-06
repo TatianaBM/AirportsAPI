@@ -22,13 +22,10 @@ const { status_422_error_2, status_422_error_1 } = errors.favorite.addFavoriteAi
 
 describe('/favorites allows you to save a favorite airport to your Airport Gap account', () => {
 
-    const userCredentials = {
-        email: Cypress.env('email'),
-        password: Cypress.env('password')
-    }
+    const { email, password } = Cypress.env('credentials')
 
     before('set token as an environmental variable', () => {
-        setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
+        setTokenAsEnvVariable(endpoints.token, email, password)
     })
 
     context('201 status code', () => {

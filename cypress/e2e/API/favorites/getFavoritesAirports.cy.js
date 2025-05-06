@@ -22,14 +22,11 @@ const link = `${Cypress.config('baseUrl')}${endpoints.airports}`
 
 describe('/favorites returns all the favorite airports saved to your Airport Gap account', () => {
 
-    const userCredentials = {
-        email: Cypress.env('email'),
-        password: Cypress.env('password')
-    }
+    const { email, password } = Cypress.env('credentials')
 
     before(() => {
         cy.log('set token as an environmental variable')
-        setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
+        setTokenAsEnvVariable(endpoints.token, email, password)
 
         cy.log('delete all favorite airports')
         cy.then(() => {

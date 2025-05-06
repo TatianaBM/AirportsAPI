@@ -17,13 +17,10 @@ const invalidTestDataToken = dataGenerator.invalidToken()
 
 describe('/favorites/clear_all', () => {
 
-    const userCredentials = {
-        email: Cypress.env('email'),
-        password: Cypress.env('password')
-    }
+    const { email, password } = Cypress.env('credentials')
 
     before('set token as an environmental variable', () => {
-        setTokenAsEnvVariable(endpoints.token, userCredentials.email, userCredentials.password)
+        setTokenAsEnvVariable(endpoints.token, email, password)
     })
 
     context('204 status code', () => {
