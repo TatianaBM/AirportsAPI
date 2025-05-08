@@ -11,10 +11,9 @@ const { status_401_error } = errors.token
 const { status_200 } = schemas.receiveToken
 const { status_401 } = schemas.receiveToken
 
-const email = Cypress.env('email')
-const password = Cypress.env('password')
-
 describe('receive token', {tags: ['@smoke', 'token']}, () => {
+
+    const { email, password } = Cypress.env('credentials')
 
     context('registered user', () => {
         // let user = dataGenerator.userData()
