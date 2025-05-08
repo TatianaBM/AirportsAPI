@@ -35,7 +35,7 @@ module.exports = defineConfig({
       const envName = config.env['type-of-environment'] || 'staging'
       const envType = config.env[envName] 
       config.baseUrl = envType.baseUrl
-      const credentials = JSON.parse(fs.readFileSync('cypress.env.json'))
+      const credentials = JSON.parse(fs.readFileSync('cypress.env.json', 'utf8'))
       config.env.credentials = credentials.userSecrets[envName]
       return config
     },
