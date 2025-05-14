@@ -13,6 +13,7 @@
                 "html": "text/html; charset=UTF-8",
                 "json": "application/json; charset=utf-8"
             }
-        }
+        },
+        "Authorization": "Bearer token="
     }
 }
