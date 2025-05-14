@@ -14,14 +14,14 @@ import errors from '../../fixtures/errors.json'
 
 const { status_200, status_404 } = schemas.getAirportById
 const { status_404_error } = errors.getAirportById
+const { json } = airports.headers['content-type'].response
 const invalidTestData = dataGenerator.invalidIATACode()
 const validTestData = dataGenerator.validIATACode()
 
 describe('get the airport by ID', () => {
-    let totalPages
 
     before(() => {
-        retrieveTotalPages(endpoints.airports).then((number) => totalPages = number)
+        retrieveTotalPages(endpoints.airports).as('numberTotalPages')
     })
 
     context('200 status code', () => {
@@ -32,11 +32,12 @@ describe('get the airport by ID', () => {
                 expect(response.status, 'status code').to.equal(200)
                 // expect(response.body.data.attributes.name, 'airport name').to.equal(validTestData.name)
                 expect(response.body.data.id, 'airport id').to.equal(validTestData.iataCode)
+                expect(response.headers['content-type']).to.eq(json)
             })
         })
         
-        it('returns the airport specified by IATA code and checks its name', () => {
-            let randomPage = Cypress._.random(1, totalPages)
+        it('returns the airport specified by IATA code and checks its name', function() {
+            let randomPage = Cypress._.random(1, this.numberTotalPages)
             let randomAirportNumber = Cypress._.random(0, airports.pagination.defaultLimit)
             cy.log(randomPage, randomAirportNumber)
             let airportsId, airportsName
@@ -54,6 +55,7 @@ describe('get the airport by ID', () => {
                 expect(response.status, 'code status').to.equal(200)
                 expect(response.body.data.attributes.name).to.equal(airportsName)
                 expect(response.body.data.id).to.equal(airportsId)
+                expect(response.headers['content-type']).to.eq(json)
             })
         })
     
@@ -68,11 +70,17 @@ describe('get the airport by ID', () => {
     
         for (let invalidId in invalidTestData) {
             it(`error by sending the non-existing IATA code: ${invalidId}`, () => {
-                fetchAirportById(endpoints.airports, invalidTestData[invalidId]).should(
+                fetchAirportById(
+                    endpoints.airports,
+                    invalidTestData[invalidId],
+                ).should(
                     spok({
                         status: 404,
-                        body: status_404_error
-                    })
+                        headers: {
+                            'content-type': json,
+                        },
+                        body: status_404_error,
+                    }),
                 )
             })
         }
