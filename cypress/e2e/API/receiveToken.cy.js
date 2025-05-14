@@ -6,10 +6,12 @@ import { returnToken, setTokenAsEnvVariable } from "../../support/utils"
 import { endpoints } from "../../support/endpoints"
 import errors from '../../fixtures/errors.json'
 import schemas from '../../fixtures/schemas.json'
+import airports from '../../fixtures/airports.json'
 
 const { status_401_error } = errors.token
 const { status_200 } = schemas.receiveToken
 const { status_401 } = schemas.receiveToken
+const { request, response } = airports.headers['content-type']
 
 describe('receive token', {tags: ['@smoke', 'token']}, () => {
 
@@ -27,6 +29,7 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
         it('returns the API token with correct credentials', () => {
             returnToken(endpoints.token, email, password).then(response => {
                 expect(response.status, 'status code').to.equal(200)
+                //expect(callData.headers['content-type']).to.eq(response.json)
                 if (response.body.token !== Cypress.env('token')) {
                     throw new Error('Not correct token value')
                 }
@@ -34,6 +37,20 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
                     throw new Error('Wrong length or type of token value')
                 }
             })            
+        })
+
+        it('checks headers: content type', () => {
+            returnToken(endpoints.token, email, password).should(
+                spok({
+                    status: 200,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    }
+                })
+            )
         })
 
         it('verifies schema for request with correct credentials', () => {
@@ -45,6 +62,12 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
             returnToken(endpoints.token, '', password).should(
                 spok({
                     status: 401,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
                     body: status_401_error
                 })
             )
@@ -54,6 +77,12 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
             returnToken(endpoints.token, email, '').should(
                 spok({
                     status: 401,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
                     body: status_401_error
                 })
             )
@@ -63,6 +92,12 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
             returnToken(endpoints.token, '', '').should(
                 spok({
                     status: 401,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
                     body: status_401_error
                 })
             )
@@ -73,6 +108,12 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
             returnToken(endpoints.token, email, invalidPassword).should(
                 spok({
                     status: 401,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
                     body: status_401_error
                 })
             )
@@ -87,6 +128,12 @@ describe('receive token', {tags: ['@smoke', 'token']}, () => {
             returnToken(endpoints.token, user.email, user.password).should(
                 spok({
                     status: 401,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
                     body: status_401_error
                 })
             )
