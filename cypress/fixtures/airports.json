@@ -4,8 +4,12 @@
     },
     "rateLimit": 100,
     "headers": {
-        "request": {
-            "content-type": {
+        "content-type": {
+            "request":{
+                "html": "text/html",
+                "json": "application/json"
+            },
+            "response":{
                 "html": "text/html; charset=UTF-8",
                 "json": "application/json; charset=utf-8"
             }

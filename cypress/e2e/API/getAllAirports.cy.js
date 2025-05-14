@@ -13,7 +13,7 @@ import schemas from '../../fixtures/schemas.json'
 import { dataGenerator } from '../../support/testData'
 
 const { defaultLimit } = airports.pagination
-const { json } = airports.headers.request['content-type']
+const { response } = airports.headers['content-type']
 const { status_404_error } = errors.fetchAllAirports
 const { status_200 } = schemas.getAllAirports
 const link = `${Cypress.config('baseUrl')}${endpoints.airports}`
@@ -30,7 +30,7 @@ describe('returns all airports in the Airport Gap database', () => {
                 spok({
                     status: 200,
                     headers: {
-                        'content-type': json
+                        'content-type': response.json
                     },
                     body: {
                         data: spok.arrayElements(defaultLimit),
@@ -52,7 +52,7 @@ describe('returns all airports in the Airport Gap database', () => {
                 spok({
                     status: 200,
                     headers: {
-                        'content-type': json
+                        'content-type': response.json
                     },
                     body: {
                         data: spok.arrayElements(defaultLimit),
@@ -74,7 +74,7 @@ describe('returns all airports in the Airport Gap database', () => {
                 spok({
                     status: 200,
                     headers: {
-                        'content-type': json
+                        'content-type': response.json
                     },
                     body: {
                         data: spok.arrayElements(defaultLimit),
@@ -98,7 +98,7 @@ describe('returns all airports in the Airport Gap database', () => {
                 spok({
                     status: 200,
                     headers: {
-                        'content-type': json
+                        'content-type': response.json
                     },
                     body: {
                         data: spok.array,
@@ -123,7 +123,7 @@ describe('returns all airports in the Airport Gap database', () => {
                 spok({
                     status: 200,
                     headers: {
-                        'content-type': json
+                        'content-type': response.json
                     },
                     body: {
                         data: hasZeroElements,
@@ -165,7 +165,7 @@ describe('returns all airports in the Airport Gap database', () => {
                         status: 404,
                         body: status_404_error,
                         headers: {
-                            'content-type': json,
+                            'content-type': response.json,
                         }
                     })
                 )

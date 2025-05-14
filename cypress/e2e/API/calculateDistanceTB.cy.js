@@ -5,29 +5,37 @@ import schemas from '../../fixtures/schemas.json'
 import spok from 'cy-spok'
 import { dataGenerator } from '../../support/testData'
 import errors from '../../fixtures/errors.json'
+import airports from '../../fixtures/airports.json'
 
 const { status_200, status_422 } = schemas.calculateDistance
 const { status_422_error } = errors.calculateDistance
+const { request, response } = airports.headers['content-type']
 
 describe('calculates the distance between two airports', () => {
-    let totalPages
     let departureAirportIata
     let destinationAirportIata
 
-    before(() => {retrieveTotalPages(endpoints.airports).then((number) => (totalPages = number))
+    beforeEach(() => {
+        retrieveTotalPages(endpoints.airports).as('numberTotalPages')
     })
     
     context('200 status code', () => {
-        it('returns the distance between two different airports', () => {
-            pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
+        it('returns the distance between two different airports', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
             departureAirportIata = departureAirport.attributes.iata
-            pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(destinationAirport => {
                 cy.log(destinationAirport)
                 destinationAirportIata = destinationAirport.attributes.iata
                 cy.log('calculate distance')
                 calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).should(spok({
                     status: 200,
+                    headers: {
+                        'content-type': response.json
+                    },
+                    requestHeaders: {
+                        'content-type': request.json
+                    },
                     body: {
                         data: {
                             type: 'airport_distance',
@@ -68,8 +76,8 @@ describe('calculates the distance between two airports', () => {
             })
         })
 
-        it('returns distance = 0 when departure and destination airports are the same', () => {
-            pickRandomAirport(totalPages, endpoints.airports).then((airport) => {
+        it('returns distance = 0 when departure and destination airports are the same', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then((airport) => {
             cy.log(airport)
             departureAirportIata = airport.attributes.iata
             destinationAirportIata = airport.attributes.iata
@@ -81,6 +89,12 @@ describe('calculates the distance between two airports', () => {
             ).should(
                 spok({
                     status: 200,
+                    headers: {
+                        'content-type': response.json
+                    },
+                    requestHeaders: {
+                        'content-type': request.json
+                    },
                     body: {
                         data: {
                             type: 'airport_distance',
@@ -121,11 +135,11 @@ describe('calculates the distance between two airports', () => {
             })
         })    
 
-        it('checks schema', () => {
-            pickRandomAirport(totalPages, endpoints.airports).then(departureAirport => {
+        it('checks schema', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(departureAirport => {
             cy.log(departureAirport)
             departureAirportIata = departureAirport.attributes.iata
-            pickRandomAirport(totalPages, endpoints.airports).then(destinationAirport => {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(destinationAirport => {
                 cy.log(destinationAirport)
                 destinationAirportIata = destinationAirport.attributes.iata
                 cy.log('calculate distance')
@@ -138,45 +152,58 @@ describe('calculates the distance between two airports', () => {
     context('422 status code', () => {
         Object.entries(dataGenerator.invalidIATACode()).forEach(
             ([key, invalidIataCodeDepartureAirport]) => {
-                it(`errors when departure airport is invalid: ${key}`, () => {
-                    pickRandomAirport(totalPages, endpoints.airports).then(
-                        (destinationAirport) => {
-                            destinationAirportIata =
-                                destinationAirport.attributes.iata
-                            calculateDistanceBetweenTwoAirports(
-                                endpoints.distance,
-                                invalidIataCodeDepartureAirport,
-                                destinationAirportIata,
-                            ).should(
-                                spok({
-                                    status: 422,
-                                    body: status_422_error,
-                                }),
-                            )
-                        },
-                    )
+                it(`errors when departure airport is invalid: ${key}`, function () {
+                    pickRandomAirport(
+                        this.numberTotalPages,
+                        endpoints.airports,
+                    ).then((destinationAirport) => {
+                        destinationAirportIata =
+                            destinationAirport.attributes.iata
+                        calculateDistanceBetweenTwoAirports(
+                            endpoints.distance,
+                            invalidIataCodeDepartureAirport,
+                            destinationAirportIata,
+                        ).should(
+                            spok({
+                                status: 422,
+                                headers: {
+                                    'content-type': response.json,
+                                },
+                                requestHeaders: {
+                                    'content-type': request.json,
+                                },
+                                body: status_422_error,
+                            }),
+                        )
+                    })
                 })
             },
         )
         Object.entries(dataGenerator.invalidIATACode()).forEach(
             ([key, invalidIataCodeDestinationAirport]) => {
-                it(`errors when destination airport is invalid: ${key}`, () => {
-                    pickRandomAirport(totalPages, endpoints.airports).then(
-                        (departureAirport) => {
-                            departureAirportIata =
-                                departureAirport.attributes.iata
-                            calculateDistanceBetweenTwoAirports(
-                                endpoints.distance,
-                                departureAirportIata,
-                                invalidIataCodeDestinationAirport,
-                            ).should(
-                                spok({
-                                    status: 422,
-                                    body: status_422_error,
-                                }),
-                            )
-                        },
-                    )
+                it(`errors when destination airport is invalid: ${key}`, function () {
+                    pickRandomAirport(
+                        this.numberTotalPages,
+                        endpoints.airports,
+                    ).then((departureAirport) => {
+                        departureAirportIata = departureAirport.attributes.iata
+                        calculateDistanceBetweenTwoAirports(
+                            endpoints.distance,
+                            departureAirportIata,
+                            invalidIataCodeDestinationAirport,
+                        ).should(
+                            spok({
+                                status: 422,
+                                headers: {
+                                    'content-type': response.json,
+                                },
+                                requestHeaders: {
+                                    'content-type': request.json,
+                                },
+                                body: status_422_error,
+                            }),
+                        )
+                    })
                 })
             },
         )
@@ -185,14 +212,26 @@ describe('calculates the distance between two airports', () => {
             let invalidIataCodes = Cypress._.sampleSize(dataGenerator.invalidIATACode(), 2)
             departureAirportIata = invalidIataCodes[0]
             destinationAirportIata = invalidIataCodes[1]
-            calculateDistanceBetweenTwoAirports(endpoints.distance, departureAirportIata, destinationAirportIata).should(spok({
-                status: 422,
-                body: status_422_error
-            }))
+            calculateDistanceBetweenTwoAirports(
+                endpoints.distance,
+                departureAirportIata,
+                destinationAirportIata,
+            ).should(
+                spok({
+                    status: 422,
+                    headers: {
+                        'content-type': response.json,
+                    },
+                    requestHeaders: {
+                        'content-type': request.json,
+                    },
+                    body: status_422_error,
+                }),
+            )
         })
 
-        it('errors when departure iata required parameter is missing',() => {
-            pickRandomAirport(totalPages, endpoints.airports).then(
+        it('errors when departure iata required parameter is missing', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(
                 (destinationAirport) => {
                     departureAirportIata = ''
                     destinationAirportIata = destinationAirport.attributes.iata
@@ -203,15 +242,21 @@ describe('calculates the distance between two airports', () => {
                     ).should(
                         spok({
                             status: 422,
+                            headers: {
+                                'content-type': response.json,
+                            },
+                            requestHeaders: {
+                                'content-type': request.json,
+                            },
                             body: status_422_error,
-                        })
+                        }),
                     )
                 }
             ) 
         })
 
-        it('errors when destination iata required parameter is missing',() => {
-            pickRandomAirport(totalPages, endpoints.airports).then(
+        it('errors when destination iata required parameter is missing', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(
                 (departureAirport) => {
                     departureAirportIata = departureAirport.attributes.iata
                     destinationAirportIata = ''
@@ -222,14 +267,20 @@ describe('calculates the distance between two airports', () => {
                     ).should(
                         spok({
                             status: 422,
+                            headers: {
+                                'content-type': response.json,
+                            },
+                            requestHeaders: {
+                                'content-type': request.json,
+                            },
                             body: status_422_error,
-                        })
+                        }),
                     )
                 }
             ) 
         })
 
-        it('errors when both required parameters are missing',() => {
+        it('errors when both required parameters are missing', () => {
             departureAirportIata = ''
             destinationAirportIata = ''
             calculateDistanceBetweenTwoAirports(
@@ -239,6 +290,12 @@ describe('calculates the distance between two airports', () => {
             ).should(
                 spok({
                     status: 422,
+                    headers: {
+                        'content-type': response.json
+                    },
+                    requestHeaders: {
+                        'content-type': request.json
+                    },
                     body: status_422_error,
                 })) 
         })
@@ -247,13 +304,19 @@ describe('calculates the distance between two airports', () => {
             calculateDistanceBetweenTwoAirports(endpoints.distance).should(
                 spok({
                     status: 422,
+                    headers: {
+                        'content-type': response.json
+                    },
+                    requestHeaders: {
+                        'content-type': request.json
+                    },
                     body: status_422_error,
                 })
             )
         })
 
-        it('checks schema', () => {
-            pickRandomAirport(totalPages, endpoints.airports).then(
+        it('checks schema', function() {
+            pickRandomAirport(this.numberTotalPages, endpoints.airports).then(
                 (destinationAirport) => {
                     departureAirportIata = ''
                     destinationAirportIata = destinationAirport.attributes.iata
