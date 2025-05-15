@@ -9,9 +9,11 @@ import { endpoints } from "../../../support/endpoints"
 import { dataGenerator } from "../../../support/testData"
 import schemas from '../../../fixtures/schemas.json'
 import errors from '../../../fixtures/errors.json'
+import { headers } from '../../../fixtures/airports.json'
 
 const { status_404_error } = errors.getAirportById
 const { status_401_error } = errors.token
+const { request, response } = headers['content-type']
 const { status_401 } = schemas.receiveToken
 const { status_200, status_404 } = schemas.updateNoteOfFavoriteAirport
 
@@ -61,6 +63,38 @@ describe('updates the note of one of the favorite airport', () => {
                         }
                     })
                 )
+            })
+        }) 
+
+        it('checks custom header Authorization', () => {
+            const note = dataGenerator.note()
+            cy.get('@favoriteRecordId').then((id) => {
+                updateNoteOfFavoriteAirport(
+                    endpoints.favorites,
+                    id,
+                    Cypress.env('token'),
+                    note,
+                ).then((data) => {
+                    expect(data.status).to.eq(200)
+                    expect(data.headers['content-type']).to.eq(response.json)
+                    expect(data.requestHeaders['content-type']).to.eq(
+                        request.json,
+                    )
+                    expect(data.requestHeaders).to.have.property(
+                        'Authorization',
+                    )
+                    if (
+                        !data.requestHeaders.Authorization ||
+                        typeof data.requestHeaders.Authorization !== 'string' ||
+                        !data.requestHeaders.Authorization.includes(
+                            headers.Authorization,
+                        )
+                    ) {
+                        throw new Error(
+                            'Missing header Autorization value or wrong data type',
+                        )
+                    }
+                })
             })
         }) 
         
