@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 import schemas from '../../../fixtures/schemas.json'
 import airports from '../../../fixtures/airports.json'
+import { headers } from '../../../fixtures/airports.json'
 import { endpoints } from '../../../support/endpoints'
 import errors from '../../../fixtures/errors.json'
 import spok from 'cy-spok'
@@ -80,8 +81,31 @@ describe('/favorites returns all the favorite airports saved to your Airport Gap
             })
         })
 
-        it('returns an ampty array when delete all favorite airports', () => {
-            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token'))
+        it('checks custom header Authorization', () => {
+            fetchAllFavoriteAirports(
+                endpoints.favorites,
+                Cypress.env('token'),
+            ).then((data) => {
+                expect(data.status).to.eq(200)
+                expect(data.requestHeaders).to.have.property('Authorization')
+                if (
+                    !data.requestHeaders.Authorization ||
+                    typeof data.requestHeaders.Authorization !== 'string' ||
+                    !data.requestHeaders.Authorization.includes(
+                        headers.Authorization,
+                    )
+                ) {
+                    throw new Error(
+                        'Missing header Autorization value or wrong data type',
+                    )
+                }
+            })
+        })
+
+        it('returns an ampty array when no favorite airports added', () => {
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(
+                (response) => expect(response.status).to.equal(204)
+            )
             fetchAllFavoriteAirports(endpoints.favorites, Cypress.env('token')).should(spok({
                 status: 200,
                 body: {
