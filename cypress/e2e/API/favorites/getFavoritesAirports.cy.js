@@ -18,6 +18,7 @@ import {
 const { status_401 } = schemas.receiveToken
 const { status_200 } = schemas.favorite.fetchFavoriteAirport
 const { status_401_error } = errors.token
+const { response } = headers['content-type']
 const invalidTestDataToken = dataGenerator.invalidToken()
 const link = `${Cypress.config('baseUrl')}${endpoints.airports}`
 
@@ -87,6 +88,7 @@ describe('/favorites returns all the favorite airports saved to your Airport Gap
                 Cypress.env('token'),
             ).then((data) => {
                 expect(data.status).to.eq(200)
+                expect(data.headers['content-type']).to.eq(response.json)
                 expect(data.requestHeaders).to.have.property('Authorization')
                 if (
                     !data.requestHeaders.Authorization ||

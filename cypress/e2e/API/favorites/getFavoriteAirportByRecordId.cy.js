@@ -13,6 +13,7 @@ import { headers } from '../../../fixtures/airports.json'
 
 const { status_401_error } = errors.token
 const { status_404_error } = errors.getAirportById
+const { response } = headers['content-type']
 const { status_401 } = schemas.receiveToken
 const { status_200, status_404 } = schemas.updateNoteOfFavoriteAirport
 
@@ -67,6 +68,7 @@ describe('get one of the favorite airport by record ID', () => {
                     Cypress.env('token'),
                 ).then((data) => {
                     expect(data.status).to.eq(200)
+                    expect(data.headers['content-type']).to.eq(response.json)
                     expect(data.requestHeaders).to.have.property(
                         'Authorization',
                     )
@@ -83,7 +85,22 @@ describe('get one of the favorite airport by record ID', () => {
                     }
                 })
             })
-        })        
+        })   
+        
+        it('returns the list of favorite airports with empty favorite record ID', function () {
+            getFavoriteAirportByRecordId(
+                endpoints.favorites,
+                '',
+                Cypress.env('token'),
+            ).should(
+                spok({
+                    status: 200,
+                    body: {
+                        data: spok.arrayElements(this.airportIdList.length),
+                    },
+                }),
+            )
+        })
 
         it('verifies schema for request with correct favorite record ID', () => {
             cy.get('@airportIdList').then(airportIdList => {
@@ -135,7 +152,13 @@ describe('get one of the favorite airport by record ID', () => {
 
     context('404 status code', () => {
     
-        beforeEach('clear all favorite airports', () => {
+        beforeEach('precondition: add favorite airports', () => {
+            const randomNumber = Cypress._.random(1, 7)
+            addFavoriteAirportsAndReturnIdList(randomNumber, endpoints.favorites, Cypress.env('token'))
+                .then(arrayOfId => cy.wrap(arrayOfId).as('airportIdList'))    
+        })
+
+        afterEach('clear all favorite airports', () => {
             clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).then(response => {
                 expect(response.status).to.equal(204)
             })
@@ -148,13 +171,6 @@ describe('get one of the favorite airport by record ID', () => {
                     expect(response.status).to.equal(404)
                     expect(response.body).to.deep.equal(status_404_error)
             })
-        })
-
-        it('error by sending request with empty favorite record ID', () => {
-            getFavoriteAirportByRecordId(endpoints.favorites, '', Cypress.env('token'))
-                .then(response => {
-                    expect(response.status).to.equal(404)
-                })
         })
 
         it ('verifies schema for request with wrong favorite record ID', () => {
