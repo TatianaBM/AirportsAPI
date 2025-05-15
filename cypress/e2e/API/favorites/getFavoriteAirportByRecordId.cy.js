@@ -9,6 +9,7 @@ import { endpoints } from '../../../support/endpoints'
 import { dataGenerator } from '../../../support/testData'
 import errors from '../../../fixtures/errors.json'
 import schemas from '../../../fixtures/schemas.json'
+import { headers } from '../../../fixtures/airports.json'
 
 const { status_401_error } = errors.token
 const { status_404_error } = errors.getAirportById
@@ -55,6 +56,34 @@ describe('get one of the favorite airport by record ID', () => {
                 })
             })
         })
+
+        it('checks custom header Authorization', () => {
+            cy.get('@airportIdList').then((ids) => {
+                console.log(ids)
+                const id = Cypress._.sample(ids)
+                getFavoriteAirportByRecordId(
+                    endpoints.favorites,
+                    id,
+                    Cypress.env('token'),
+                ).then((data) => {
+                    expect(data.status).to.eq(200)
+                    expect(data.requestHeaders).to.have.property(
+                        'Authorization',
+                    )
+                    if (
+                        !data.requestHeaders.Authorization ||
+                        typeof data.requestHeaders.Authorization !== 'string' ||
+                        !data.requestHeaders.Authorization.includes(
+                            headers.Authorization,
+                        )
+                    ) {
+                        throw new Error(
+                            'Missing header Autorization value or wrong data type',
+                        )
+                    }
+                })
+            })
+        })        
 
         it('verifies schema for request with correct favorite record ID', () => {
             cy.get('@airportIdList').then(airportIdList => {
