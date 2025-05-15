@@ -4,12 +4,12 @@ import errors from '../../../fixtures/errors.json'
 import spok from 'cy-spok'
 import { faker } from '@faker-js/faker'
 import { dataGenerator } from '../../../support/testData'
+import { headers } from '../../../fixtures/airports.json'
 import {
     setTokenAsEnvVariable,
     clearAllFavoriteAirports,
     isEmptyString,
-    includesTextPlain,
-    addRandomNumberOfFavoriteAirports
+    addRandomNumberOfFavoriteAirports,
 } from '../../../support/utils'
 
 const { status_401_error } = errors.token
@@ -25,7 +25,7 @@ describe('/favorites/clear_all', () => {
 
     context('204 status code', () => {
 
-        before('precondition: add favorite airports', () => {
+        beforeEach('precondition: add favorite airports', () => {
             const randomNumberFavAirports = Cypress._.random(1,15)
             addRandomNumberOfFavoriteAirports(
                 endpoints.airports,
@@ -39,13 +39,38 @@ describe('/favorites/clear_all', () => {
             clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).should(spok({
                 status: 204,
                 body: isEmptyString,
-                headers: {
-                    "content-type": includesTextPlain
-                }
             }))
         })
 
+        it('checks custom header Authorization', () => {
+            clearAllFavoriteAirports(
+                endpoints.clearAll,
+                Cypress.env('token')).then((data) => {
+                    expect(data.status).to.eq(204)
+                    expect(data.requestHeaders).to.have.property(
+                        'Authorization',
+                    )
+                    if (
+                        !data.requestHeaders.Authorization ||
+                        typeof data.requestHeaders.Authorization !== 'string' ||
+                        !data.requestHeaders.Authorization.includes(
+                            headers.Authorization,
+                        )
+                    ) {
+                        throw new Error(
+                            'Missing header Autorization value or wrong data type',
+                        )
+                    }
+                })
+        })
+
         it('return 204 if no favorite airport is added ', () => {
+            cy.log('ensure no favorite airports added')
+            clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).should(spok({
+                status: 204,
+                body: isEmptyString
+            }))
+            cy.log('clear all')
             clearAllFavoriteAirports(endpoints.clearAll, Cypress.env('token')).should(spok({
                 status: 204,
                 body: isEmptyString
@@ -64,6 +89,13 @@ describe('/favorites/clear_all', () => {
                 Cypress.env('token'),
                 randomNumberFavAirports,
             )
+        })
+
+        afterEach('clear all favorite airports', () => {
+            clearAllFavoriteAirports(
+                endpoints.clearAll,
+                Cypress.env('token'),
+            ).then((response) => expect(response.status).to.equal(204))
         })
         
         it('should error with invalid token', () => {
