@@ -1,5 +1,6 @@
 const { defineConfig } = require("cypress");
 const fs = require('fs');
+const cypressSplit = require('cypress-split')
 
 module.exports = defineConfig({
   viewportHeight: 1080,
@@ -37,6 +38,7 @@ module.exports = defineConfig({
       config.baseUrl = envType.baseUrl
       const credentials = JSON.parse(fs.readFileSync('cypress.env.json', 'utf8'))
       config.env.credentials = credentials.userSecrets[envName]
+      cypressSplit(on, config)
       return config
     },
   },

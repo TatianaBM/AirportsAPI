@@ -11,17 +11,20 @@
     "cy:run:smoke": "cypress run --env grepTags=@smoke",
     "cy:sandbox": "npm run cy:run --env type-of-environment=sandbox",
     "cy:staging": "npm run cy:run --env type-of-environment=staging",
-    "cy:favorite:staging": "npm run cy:favorite:run -- --env type-of-environment=staging"
+    "cy:favorite:staging": "npm run cy:favorite:run -- --env type-of-environment=staging",
+    "cy:run:parallel:locally:staging": "concurrently \"npm run cy:staging -- --env SPLIT=1/2\" \"npm run cy:staging -- --env SPLIT=2/2\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@bahmutov/cy-grep": "^2.0.22",
     "@faker-js/faker": "^9.6.0",
+    "concurrently": "^9.1.2",
     "cy-spok": "^1.5.2",
     "cypress": "^14.1.0",
     "cypress-ajv-schema-validator": "^1.4.0",
     "cypress-mochawesome-reporter": "^3.8.2",
-    "cypress-plugin-api": "^2.11.2"
+    "cypress-plugin-api": "^2.11.2",
+    "cypress-split": "^1.24.17"
   }
 }
