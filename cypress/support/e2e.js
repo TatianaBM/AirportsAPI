@@ -26,3 +26,13 @@ before(()=>{
     return false
   })
 })
+
+Cypress.on('test:after:run', (test, runnable) => {
+  if (Cypress.config('video')) {
+
+    const videoFile = `../videos/${Cypress.spec.name}.mp4`
+    if (Cypress.Mochawesome) {
+      Cypress.Mochawesome.context.push(videoFile)
+    }
+  }
+})
