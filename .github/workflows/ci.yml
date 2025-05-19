@@ -7,8 +7,14 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [1, 2, 3]
     env:
       CYPRESS_ENV: ${{ vars.ENV_TYPE }}
+      SPLIT: ${{ strategy.job-total }}
+      SPLIT_INDEX: ${{ strategy.job-index }}
 
     steps:
       - name: Git clone
@@ -26,5 +32,5 @@ jobs:
         if: always()  
         uses: actions/upload-artifact@v4
         with:
-          name: mochawesome-report
+          name: mochawesome-report-${{ matrix.container }}
           path: cypress/results
