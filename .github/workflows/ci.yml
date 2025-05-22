@@ -1,0 +1,37 @@
+name: Run the tests on pull requests
+
+on:
+    pull_request:
+      branches: [main]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [1, 2, 3]
+    env:
+      CYPRESS_ENV: ${{ vars.ENV_TYPE }}
+      SPLIT: ${{ strategy.job-total }}
+      SPLIT_INDEX: ${{ strategy.job-index }}
+
+    steps:
+      - name: Git clone
+        uses: actions/checkout@v4
+
+      - name: Write cypress.env.json
+        run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
+
+      - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
+        uses: cypress-io/github-action@v6
+        with:
+          command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
+              --reporter mochawesome --reporter-options overwrite=false
+
+      - name: Upload Mochawesome Report
+        if: always()  
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-report-${{ matrix.container }}
+          path: cypress/results
