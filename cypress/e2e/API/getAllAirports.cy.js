@@ -18,14 +18,17 @@ const { status_404_error } = errors.fetchAllAirports
 const { status_200 } = schemas.getAllAirports
 const link = `${Cypress.config('baseUrl')}${endpoints.airports}`
 
-describe('returns all airports in the Airport Gap database', () => {
+describe('fetches all airports', () => {
 
-    beforeEach(() => {
-        retrieveTotalPages(endpoints.airports).as('numberTotalPages')
+    before('set total number of pages as an environmental variable', () => {
+        retrieveTotalPages(endpoints.airports).then(number => {
+            Cypress.env('numberTotalPages', number)
+        })
     })
 
     context('200 status code', () => {
-        it('returns default limit from the first page without sending page parameter', function () {
+
+        it('returns default limit from the first page without sending page parameter', () => {
             fetchAirports(endpoints.airports).should(
                 spok({
                     status: 200,
@@ -37,7 +40,7 @@ describe('returns all airports in the Airport Gap database', () => {
                         links: {
                             first: link,
                             self: link,
-                            last: `${link}?page=${this.numberTotalPages}`,
+                            last: `${link}?page=${Cypress.env('numberTotalPages')}`,
                             prev: `${link}`,
                             next: `${link}?page=2`,
                         },
@@ -46,7 +49,7 @@ describe('returns all airports in the Airport Gap database', () => {
             )
         })
 
-        it('returns default limit from the first page', function () {
+        it('returns default limit from the first page', () => {
             let firstPage = 1
             fetchAirportsByPage(endpoints.airports, firstPage).should(
                 spok({
@@ -59,7 +62,7 @@ describe('returns all airports in the Airport Gap database', () => {
                         links: {
                             first: `${link}`,
                             self: `${link}?page=${firstPage}`,
-                            last: `${link}?page=${this.numberTotalPages}`,
+                            last: `${link}?page=${Cypress.env('numberTotalPages')}`,
                             prev: `${link}`,
                             next: `${link}?page=${firstPage + 1}`,
                         },
@@ -68,8 +71,8 @@ describe('returns all airports in the Airport Gap database', () => {
             )
         })
 
-        it('returns default limit from random page', function () {
-            let randomPage = Cypress._.random(2, this.numberTotalPages - 1)
+        it('returns default limit from random page', () => {
+            let randomPage = Cypress._.random(2, Cypress.env('numberTotalPages') - 1)
             fetchAirportsByPage(endpoints.airports, randomPage).should(
                 spok({
                     status: 200,
@@ -81,7 +84,7 @@ describe('returns all airports in the Airport Gap database', () => {
                         links: {
                             first: `${link}`,
                             self: `${link}?page=${randomPage}`,
-                            last: `${link}?page=${this.numberTotalPages}`,
+                            last: `${link}?page=${Cypress.env('numberTotalPages')}`,
                             prev: `${link}?page=${randomPage - 1}`,
                             next: `${link}?page=${randomPage + 1}`,
                         },
@@ -90,10 +93,10 @@ describe('returns all airports in the Airport Gap database', () => {
             )
         })
 
-        it('returns last page', function () {
+        it('returns last page', () => {
             fetchAirportsByPage(
                 endpoints.airports,
-                this.numberTotalPages,
+                Cypress.env('numberTotalPages'),
             ).should(
                 spok({
                     status: 200,
@@ -104,9 +107,9 @@ describe('returns all airports in the Airport Gap database', () => {
                         data: spok.array,
                         links: {
                             first: `${link}`,
-                            self: `${link}?page=${this.numberTotalPages}`,
-                            last: `${link}?page=${this.numberTotalPages}`,
-                            prev: `${link}?page=${this.numberTotalPages - 1}`,
+                            self: `${link}?page=${Cypress.env('numberTotalPages')}`,
+                            last: `${link}?page=${Cypress.env('numberTotalPages')}`,
+                            prev: `${link}?page=${Cypress.env('numberTotalPages') - 1}`,
                             next: `${link}`,
                         },
                     },
@@ -114,8 +117,8 @@ describe('returns all airports in the Airport Gap database', () => {
             )
         })
 
-        it('returns an empty array for pages exceeding total pages ', function () {
-            let exceedTotalPages = this.numberTotalPages + 1
+        it('returns an empty array for pages exceeding total pages ', () => {
+            let exceedTotalPages = Cypress.env('numberTotalPages') + 1
             function hasZeroElements(array) {
                 return array.length === 0
             }
@@ -138,17 +141,17 @@ describe('returns all airports in the Airport Gap database', () => {
             )
         })
 
-        it('verifies schema when retrieving a page', function () {
-            let page = Cypress._.random(2, this.numberTotalPages - 1)
+        it('verifies schema when retrieving a page', () => {
+            let page = Cypress._.random(2, Cypress.env('numberTotalPages') - 1)
             fetchAirportsByPage(endpoints.airports, page).validateSchema(
                 status_200.schema_2,
             )
         })
 
-        it('verifies schema for pages exceeding total pages', function () {
+        it('verifies schema for pages exceeding total pages', () => {
             let page = Cypress._.random(
-                this.numberTotalPages + 1,
-                this.numberTotalPages + 100,
+                Cypress.env('numberTotalPages') + 1,
+                Cypress.env('numberTotalPages') + 100,
             )
             fetchAirportsByPage(endpoints.airports, page).validateSchema(
                 status_200.schema_1,
@@ -159,7 +162,6 @@ describe('returns all airports in the Airport Gap database', () => {
     context('404 status code', () => {
         dataGenerator.invalidPageParameters.forEach((invalidPage) => {
             it(`it errors when fetching non existing page = ${invalidPage}`, () => {
-                console.log(status_404_error)
                 fetchAirportsByPage(endpoints.airports, invalidPage).should(
                     spok({
                         status: 404,
