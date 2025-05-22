@@ -20,6 +20,7 @@ import 'cypress-ajv-schema-validator'
 import 'cypress-mochawesome-reporter/register'
 import registerCypressGrep from '@bahmutov/cy-grep/src/support'
 registerCypressGrep()
+import 'cypress-data-session'
 
 before(()=>{
     Cypress.on('uncaught:exception', (err, runnable) => {
