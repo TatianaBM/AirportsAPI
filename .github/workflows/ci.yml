@@ -7,10 +7,10 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       container: [1, 2, 3]
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [1, 2, 3]
     env:
       CYPRESS_ENV: ${{ vars.ENV_TYPE }}
       SPLIT: ${{ strategy.job-total }}
@@ -43,9 +43,9 @@ jobs:
       - name: Upload test JSON results
         if: always()
         uses: actions/upload-artifact@v4
-  #       with:
-  #         name: mochawesome-results-${{ matrix.container }}
-  #         path: cypress/results/*.json
+        with:
+          name: mochawesome-results-${{ matrix.container }}
+          path: cypress/results/*.json
   
   # merge-report:
   #   runs-on: ubuntu-latest
