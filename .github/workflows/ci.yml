@@ -29,9 +29,9 @@ jobs:
           command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
               --reporter mochawesome --reporter-options overwrite=false
 
-      # - name: Upload Mochawesome Report
-      #   if: always()  
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: mochawesome-report-${{ matrix.container }}
-      #     path: cypress/results
+      - name: Upload Mochawesome Report
+        if: always()  
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-report-${{ matrix.container }}
+          path: cypress/results
