@@ -15,7 +15,8 @@
         "clean:reports": "rimraf cypress/results cypress/report.json mochawesome-report",
         "report:merge": "npx mochawesome-merge \"cypress/results/*.json\" -o cypress/report.json",
         "report:generate": "npx marge cypress/report.json  --inlineAssets --charts true",
-        "test:staging": "npm run clean:reports && npm run cy:staging && npm run report:merge && npm run report:generate"
+        "test:staging": "npm run clean:reports && npm run cy:staging && npm run report:merge && npm run report:generate",
+        "test:favorite:report": "npm run clean:reports && npm run cy:favorite:staging && npm run report:merge && npm run report:generate"
     },
     "author": "",
     "license": "ISC",
