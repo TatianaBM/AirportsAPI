@@ -7,10 +7,10 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     container: [1, 2, 3]
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [1, 2, 3]
     env:
       CYPRESS_ENV: ${{ vars.ENV_TYPE }}
       SPLIT: ${{ strategy.job-total }}
@@ -20,19 +20,27 @@ jobs:
       - name: Git clone
         uses: actions/checkout@v4
 
+      - name: Install deps
+        run: npm ci
+
       - name: Write cypress.env.json
         run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
 
       - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
-        uses: bahmutov/cypress-workflows/.github/workflows/split.yml@v1
-        with:
-          n: 3
+        # uses: bahmutov/cypress-workflows/.github/workflows/split.yml@v1
+        # with:
+        #   n: 3
           # start: npm start
-          marge: true
+          # marge: true
         # uses: cypress-io/github-action@v6
         # with:
-          command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
-              --reporter mochawesome --reporter-options overwrite=false
+          # command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
+          #     --reporter mochawesome --reporter-options overwrite=false
+
+          run: |
+            npx cypress-split --index ${{ matrix.index }} --count 3 \
+            -- npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
+            --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results
 
       # - name: Upload Mochawesome Report
       #   if: always()  
