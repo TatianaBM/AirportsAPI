@@ -20,6 +20,11 @@ jobs:
       - name: Git clone
         uses: actions/checkout@v4
 
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Write cypress.env.json
         run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
 
@@ -35,9 +40,9 @@ jobs:
           command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
               --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
 
-  #     - name: Upload test JSON results
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
+      - name: Upload test JSON results
+        if: always()
+        uses: actions/upload-artifact@v4
   #       with:
   #         name: mochawesome-results-${{ matrix.container }}
   #         path: cypress/results/*.json
