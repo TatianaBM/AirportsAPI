@@ -7,12 +7,21 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       container: [1, 2, 3]
+    env:
+      CYPRESS_ENV: ${{ vars.ENV_TYPE }}
+      SPLIT: ${{ strategy.job-total }}
+      SPLIT_INDEX: ${{ strategy.job-index }}
 
     steps:
       - name: Git clone
         uses: actions/checkout@v4
 
-      - run: npm ci
+      - name: Write cypress.env.json
+        run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
 
       - name: Show debug info
         run: npx cypress info
@@ -20,30 +29,11 @@ jobs:
       - name: List test files
         run: ls -R cypress/e2e
 
-      - name: Run Cypress tests
-        run: npx cypress run --browser electron
-
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       container: [1, 2, 3]
-  #   env:
-  #     CYPRESS_ENV: ${{ vars.ENV_TYPE }}
-  #     SPLIT: ${{ strategy.job-total }}
-  #     SPLIT_INDEX: ${{ strategy.job-index }}
-
-  #   steps:
-  #     - name: Git clone
-  #       uses: actions/checkout@v4
-
-  #     - name: Write cypress.env.json
-  #       run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
-
-  #     - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
-  #       uses: cypress-io/github-action@v6
-  #       with:
-  #         command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
-  #             --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
+      - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
+        uses: cypress-io/github-action@v6
+        with:
+          command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
+              --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
 
   #     - name: Upload test JSON results
   #       if: always()
