@@ -7,57 +7,73 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        container: [1, 2, 3]
-    env:
-      CYPRESS_ENV: ${{ vars.ENV_TYPE }}
-      SPLIT: ${{ strategy.job-total }}
-      SPLIT_INDEX: ${{ strategy.job-index }}
 
     steps:
       - name: Git clone
         uses: actions/checkout@v4
 
-      - name: Write cypress.env.json
-        run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
+      - run: npm ci
 
-      - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
-        uses: cypress-io/github-action@v6
-        with:
-          command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
-              --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
+      - name: Show debug info
+        run: npx cypress info
 
-      - name: Upload test JSON results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-results-${{ matrix.container }}
-          path: cypress/results/*.json
+      - name: List test files
+        run: ls -R cypress/e2e
+
+      - name: Run Cypress tests
+        run: npx cypress run --browser electron
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       container: [1, 2, 3]
+  #   env:
+  #     CYPRESS_ENV: ${{ vars.ENV_TYPE }}
+  #     SPLIT: ${{ strategy.job-total }}
+  #     SPLIT_INDEX: ${{ strategy.job-index }}
+
+  #   steps:
+  #     - name: Git clone
+  #       uses: actions/checkout@v4
+
+  #     - name: Write cypress.env.json
+  #       run: echo '${{ secrets.CYPRESS_ENV_FILE }}' > cypress.env.json
+
+  #     - name: Run Cypress tests for ${{ env.CYPRESS_ENV }}
+  #       uses: cypress-io/github-action@v6
+  #       with:
+  #         command: npx cypress run --env type-of-environment=${{ env.CYPRESS_ENV }} \
+  #             --reporter mochawesome --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
+
+  #     - name: Upload test JSON results
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mochawesome-results-${{ matrix.container }}
+  #         path: cypress/results/*.json
   
-  merge-report:
-    runs-on: ubuntu-latest
-    needs: cypress-run
-    steps:
-      - uses: actions/checkout@v4
+  # merge-report:
+  #   runs-on: ubuntu-latest
+  #   needs: cypress-run
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download all JSON artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: results
+  #     - name: Download all JSON artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: results
 
-      - name: Merge Mochawesome JSON files
-        run: |
-          mkdir -p merged
-          npx mochawesome-merge "results/**/*.json" > merged/report.json
+  #     - name: Merge Mochawesome JSON files
+  #       run: |
+  #         mkdir -p merged
+  #         npx mochawesome-merge "results/**/*.json" > merged/report.json
 
-      - name: Generate HTML report
-        run: |
-          npx marge merged/report.json --reportDir merged --inlineAssets --charts
+  #     - name: Generate HTML report
+  #       run: |
+  #         npx marge merged/report.json --reportDir merged --inlineAssets --charts
 
-      - name: Upload final HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: final-mochawesome-report
-          path: merged
+  #     - name: Upload final HTML report
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: final-mochawesome-report
+  #         path: merged
