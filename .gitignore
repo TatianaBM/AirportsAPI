@@ -12,5 +12,7 @@ cypress.env.json
 cypress/results
 cypress/screenshots
 cypress/videos
+cypress/report.json
+mochawesome-report
 
 cypress/downloads

@@ -42,6 +42,8 @@ export function retrieveTotalPages(requestUrl) {
         url: requestUrl,
         method: 'GET',
         failOnStatusCode: false
+    }).should((response) => {
+        expect(response.status).to.eq(200)
     }).its('body.links.last').then(link => {
         //Finds digits (\d+) at the end ($) of the string.
         const regex = /\d+$/

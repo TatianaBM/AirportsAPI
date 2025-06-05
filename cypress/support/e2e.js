@@ -17,23 +17,30 @@
 import './commands'
 import 'cypress-plugin-api'
 import 'cypress-ajv-schema-validator'
-import 'cypress-mochawesome-reporter/register'
 import registerCypressGrep from '@bahmutov/cy-grep/src/support'
 registerCypressGrep()
 import 'cypress-data-session'
+import addContext from 'mochawesome/addContext'
 
-before(()=>{
+before(() => {
     Cypress.on('uncaught:exception', (err, runnable) => {
-    return false
-  })
+        return false
+    })
 })
 
-Cypress.on('test:after:run', (test, runnable) => {
-  if (Cypress.config('video')) {
+const titleToFileName = (title) => title.replace(/[:\/]/g, '')
 
-    const videoFile = `../videos/${Cypress.spec.name}.mp4`
-    if (Cypress.Mochawesome) {
-      Cypress.Mochawesome.context.push(videoFile)
+Cypress.on('test:after:run', (test, runnable) => {
+    if (test.state === 'failed') {
+        let parent = runnable.parent
+        let filename = ''
+        while (parent && parent.title) {
+            filename = `${titleToFileName(parent.title)} -- ${filename}`
+            parent = parent.parent
+        }
+        filename += `${titleToFileName(test.title)} (failed).png`
+        addContext({ test }, `../screenshots/${Cypress.spec.name}/${filename}`)
     }
-  }
+    // always add the video
+    addContext({ test }, `../videos/${Cypress.spec.name}.mp4`)
 })
