@@ -54,9 +54,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: cypress-run
     if: always()
-    
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install reporter tools
+        run: npm install -g mochawesome-merge mochawesome-report-generator
 
       - name: Download all test results
         uses: actions/download-artifact@v4
