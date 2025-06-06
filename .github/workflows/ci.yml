@@ -11,6 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         container: [1, 2, 3]
+
     env:
       CYPRESS_ENV: ${{ vars.ENV_TYPE }}
       SPLIT: ${{ strategy.job-total }}
@@ -67,34 +68,26 @@ jobs:
       - name: Install reporter tools
         run: npm install -g mochawesome-merge mochawesome-report-generator
 
-      - name: Download all test results
+      - name: Download all JSON artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: results
 
-      - name: Move all JSON to one folder
+      - name: Debug list downloaded results
         run: |
-          mkdir -p merged
-          find artifacts -name "*.json" -exec cp {} merged/ \;
-
-      - name: Copy videos and screenshots
-        run: |
-          mkdir -p merged/videos merged/screenshots
-          find artifacts -type f -name "*.mp4" -exec cp {} merged/videos/ \;
-          find artifacts -type f -name "*.png" -exec cp {} merged/screenshots/ \;
+          echo "Listing all downloaded JSON"
+          find results -name "*.json" || echo "No JSON found"
 
       - name: Merge Mochawesome JSON files
         run: |
-          npx mochawesome-merge merged/*.json > merged/report.json
+          mkdir -p merged
+          npx mochawesome-merge "results/**/*.json" > merged/report.json
 
-      - name: Generate HTML report with assets
+      - name: Generate HTML report
         run: |
-          npx marge merged/report.json \
-            --reportDir merged \
-            --inlineAssets \
-            --charts
+          npx marge merged/report.json --reportDir merged --inlineAssets --charts
 
-      - name: Upload final HTML report (with videos/screenshots)
+      - name: Upload final HTML report
         uses: actions/upload-artifact@v4
         with:
           name: final-mochawesome-report
