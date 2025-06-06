@@ -38,7 +38,7 @@ jobs:
             --reporter mochawesome \
             --reporter-options overwrite=false,reportDir=cypress/results,json=true,html=false
 
-      - name: Debug: list JSON results
+      - name: Debug list JSON results
         run: |
           echo "Listing JSON in cypress/results"
           find cypress/results -name "*.json" || echo "No JSON found"
