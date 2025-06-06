@@ -53,40 +53,37 @@ jobs:
   merge-report:
     runs-on: ubuntu-latest
     needs: cypress-run
-    if: always()
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install reporter tools
-        run: npm install -g mochawesome-merge mochawesome-report-generator
-
-      - name: Download all JSON artifacts
+      - name: Download all test results
         uses: actions/download-artifact@v4
         with:
-          path: results
+          path: artifacts
 
-      - name: Debug list downloaded results
+      - name: Move all JSON to one folder
         run: |
-          echo "Listing all downloaded JSON"
-          find results -name "*.json" || echo "No JSON found"
+          mkdir -p merged
+          find artifacts -name "*.json" -exec cp {} merged/ \;
+
+      - name: Copy videos and screenshots
+        run: |
+          mkdir -p merged/videos merged/screenshots
+          find artifacts -type f -name "*.mp4" -exec cp {} merged/videos/ \;
+          find artifacts -type f -name "*.png" -exec cp {} merged/screenshots/ \;
 
       - name: Merge Mochawesome JSON files
         run: |
-          mkdir -p merged
-          npx mochawesome-merge "results/**/*.json" > merged/report.json
+          npx mochawesome-merge merged/*.json > merged/report.json
 
-      - name: Generate HTML report
+      - name: Generate HTML report with assets
         run: |
-          npx marge merged/report.json --reportDir merged --inlineAssets --charts
+          npx marge merged/report.json \
+            --reportDir merged \
+            --inlineAssets \
+            --charts
 
-      - name: Upload final HTML report
+      - name: Upload final HTML report (with videos/screenshots)
         uses: actions/upload-artifact@v4
         with:
           name: final-mochawesome-report
