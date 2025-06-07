@@ -13,8 +13,7 @@ module.exports = defineConfig({
         useInlineDiffs: true,
         reportDir: 'cypress/results',
         reportFilename: '[name].html',
-        overwrite: true,
-        html: false
+        overwrite: true
     },
     env: {
         staging: {
