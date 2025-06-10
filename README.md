@@ -25,8 +25,12 @@ For successful test execution on your local machine, you need to register on the
 
 ``` json
 {
-    "email": "your-registered-email@example.com",
-    "password": "your-secure-password"
+    "userSecrets": {
+        "staging": { 
+            "email": "your-registered-email@example.com", 
+            "password": "your-secure-password" 
+        }
+    }
 }
 ```
 
@@ -58,9 +62,19 @@ For example:
 
 - @faker-js/faker - Generates dynamic test data for improved test coverage.
 
-- cypress-mochawesome-reporter - Generates detailed, visually rich test reports with screenshots and videos embedded for easier debugging.
-
 - @bahmutov/cy-grep - Enables running only specific tests by filtering them based on keywords in their `it` or `describe` titles.
+
+- cypress-data-session - Manages and caches test data between tests to avoid unnecessary setup and speed up test runs.
+
+- cypress-split - Splits Cypress test files across multiple CI containers or threads to enable parallel test execution and reduce overall run time.
+
+- mochawesome - Generates detailed test reports in JSON and HTML formats from Mocha/Cypress runs.
+
+- mochawesome-merge - Merges multiple mochawesome JSON reports into a single file for consolidated reporting.
+
+- mochawesome-report-generator - Creates readable HTML reports with charts and details from mochawesome JSON output.
+
+- rimraf - Cross-platform utility for deleting files and folders, often used for cleanup before tests or report generation.
 
 **Test Organization**
 
