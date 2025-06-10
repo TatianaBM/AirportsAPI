@@ -23,7 +23,6 @@
     "devDependencies": {
         "@bahmutov/cy-grep": "^2.0.22",
         "@faker-js/faker": "^9.6.0",
-        "concurrently": "^9.1.2",
         "cy-spok": "^1.5.2",
         "cypress": "^14.1.0",
         "cypress-ajv-schema-validator": "^1.4.0",
